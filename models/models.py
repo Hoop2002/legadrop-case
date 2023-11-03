@@ -80,24 +80,24 @@ class Administrator(Base):
 case_items = Table(
     "case_items",
     Base.metadata,
-    Column("case_id", Integer, ForeignKey("cases.case_id"), primary_key=True),
-    Column("item_id", Integer, ForeignKey("items.item_id"), primary_key=True),
+    Column("case_id", String, ForeignKey("cases.case_id"), primary_key=True),
+    Column("item_id", String, ForeignKey("items.item_id"), primary_key=True),
 )
 
 case_openings = Table(
     "case_openings",
     Base.metadata,
     Column("id", Integer, primary_key=True, autoincrement=True),
-    Column("user_id", Integer, ForeignKey("users.id")),
-    Column("case_id", Integer, ForeignKey("cases.id")),
+    Column("user_id", String, ForeignKey("users.user_id")),
+    Column("case_id", String, ForeignKey("cases.case_id")),
     Column("opened_date", DateTime, default=datetime.utcnow),
 )
 
 user_inventory = Table(
     "user_inventory",
     Base.metadata,
-    Column("user_id", Integer, ForeignKey("users.id"), primary_key=True),
-    Column("item_id", Integer, ForeignKey("items.id"), primary_key=True),
+    Column("user_id", String, ForeignKey("users.user_id"), primary_key=True),
+    Column("item_id", String, ForeignKey("items.item_id"), primary_key=True),
     Column("acquired_date", DateTime, default=datetime.utcnow),
 )
 
@@ -118,7 +118,7 @@ class Case(Base):
     case_id = Column(String, unique=True, default=generator_id)
     name = Column(String)
     image = Column(String)
-    category_id = Column(Integer, ForeignKey("categories.category_id"))
+    category_id = Column(String, ForeignKey("categories.category_id"))
     created_at = Column(DateTime, default=datetime.utcnow)
     category = relationship("Category", back_populates="cases")
     items = relationship("Item", secondary=case_items, back_populates="cases")
@@ -184,7 +184,7 @@ class SocialAuth(Base):
     __tablename__ = "social_auths"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    user_id = Column(Integer, ForeignKey("users.user_id"))
+    user_id = Column(String, ForeignKey("users.user_id"))
     provider = Column(String)
     social_id = Column(Integer, unique=True)
     user = relationship("User", back_populates="social_accounts")
@@ -193,7 +193,7 @@ class SocialAuth(Base):
 class Deposit(Base):
     __tablename__ = "deposits"
     id = Column(Integer, primary_key=True, autoincrement=True)
-    user_id = Column(Integer, ForeignKey("users.id"))
+    user_id = Column(String, ForeignKey("users.user_id"))
     amount = Column(DECIMAL)
     deposited_on = Column(DateTime, default=datetime.utcnow)
 
@@ -201,9 +201,9 @@ class Deposit(Base):
 class Expenditure(Base):
     __tablename__ = "expenditures"
     id = Column(Integer, primary_key=True, autoincrement=True)
-    user_id = Column(Integer, ForeignKey("users.id"))
+    user_id = Column(String, ForeignKey("users.user_id"))
     amount = Column(DECIMAL)
-    case_id = Column(Integer, ForeignKey("cases.id"))
+    case_id = Column(String, ForeignKey("cases.case_id"))
     spent_on = Column(DateTime, default=datetime.utcnow)
 
 
@@ -211,7 +211,7 @@ class UserToken(Base):
     __tablename__ = "users_tokens"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    user_id = Column(Integer, ForeignKey("users.id"))
+    user_id = Column(String, ForeignKey("users.user_id"))
     token = Column(String, unique=True)
     date_created = Column(DateTime, default=datetime.utcnow)
     date_expired = Column(DateTime)
