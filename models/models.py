@@ -1,4 +1,5 @@
 from datetime import datetime
+from email.policy import default
 from sqlalchemy import (
     Boolean,
     Column,
@@ -136,6 +137,15 @@ class ItemCompound(Base):
     
     item = relationship("Item", back_populates="compound")
 
+class RarityCategory(Base):
+    __tablename__ = "rarity_category"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    name = Column(String)
+    category_id = Column(String, unique=True, default=generator_id)
+    category_percent = Column(Integer) # групповой процент
+    item = relationship("Item", back_populates="rarity_category")
+    
 
 class Item(Base):
     __tablename__ = "items"
@@ -148,13 +158,23 @@ class Item(Base):
     color = Column(String)
     image = Column(String)
     created_at = Column(DateTime, default=datetime.utcnow)
+    step_down_factor = Column(DECIMAL) # если коофициент ниже 1.0 то кооф будет понижать
     
+    rarity_category_id = Column(String, ForeignKey("rarity_category.category_id"))
+    rarity_category = relationship("RarityCategory", back_populates="item")
+
     compound = relationship("ItemCompound", back_populates="item")
     cases = relationship("Case", secondary=case_items, back_populates="items")
     user_items = relationship(
         "User", secondary=user_inventory, back_populates="inventory_items"
     )
 
+class Test(Base):
+    __tablename__ = "test"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    name = Column(String)
+    test = Column(String)
 
 class User(Base):
     __tablename__ = "users"

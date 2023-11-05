@@ -109,7 +109,8 @@ async def init_database():
         Category,
         Case,
         Item,
-        ItemCompound
+        ItemCompound,
+        RarityCategory,
     )
 
     async with engine.begin() as conn:

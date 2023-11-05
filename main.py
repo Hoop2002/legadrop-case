@@ -3,6 +3,7 @@ from fastapi.staticfiles import StaticFiles
 from starlette.middleware.cors import CORSMiddleware
 from uvicorn import run
 
+
 from routers.admin.auth import admin_sign_in, admin_me
 
 from routers.admin.permissions import (
@@ -159,5 +160,41 @@ app.include_router(change_password, tags=["main"])
 
 app.include_router(password_generator, tags=["spec"], prefix="/admin/spec")
 
+
+
+from sqladmin import Admin
+from database.database import engine
+
+from models.admins_models import (
+    RoleAdmin,
+    PermissionAdmin,
+    AdministratorAdmin,
+    RarityCategoryAdmin,
+    CaseAdmin,
+    ItemAdmin,
+    ItemCompoundAdmin,
+    UserAdmin,
+    SocialAuthAdmin,
+    DepositAdmin,
+    ExpenditureAdmin,
+    UserTokenAdmin,
+)
+
+admin = Admin(app, engine)
+
+admin.add_view(RoleAdmin)
+admin.add_view(PermissionAdmin)
+admin.add_view(AdministratorAdmin)
+admin.add_view(RarityCategoryAdmin)
+admin.add_view(CaseAdmin)
+admin.add_view(ItemAdmin)
+admin.add_view(ItemCompoundAdmin)
+admin.add_view(UserAdmin)
+admin.add_view(SocialAuthAdmin)
+admin.add_view(DepositAdmin)
+admin.add_view(ExpenditureAdmin)
+admin.add_view(UserTokenAdmin)
+
+
 if __name__ == "__main__":
-    run("main:app", host="0.0.0.0", port=8000, reload=True)
+    run("main:app", host="91.226.83.165", port=8000, reload=True)

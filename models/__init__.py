@@ -7,7 +7,8 @@ from .models import (
     Category,
     Case,
     Item,
-    ItemCompound
+    ItemCompound,
+    RarityCategory,
 )
 
 from .admin_request_models import (
