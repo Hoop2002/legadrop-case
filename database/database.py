@@ -3,7 +3,11 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_asyn
 from sqlalchemy.ext.declarative import declarative_base
 
 
-DATABASE_URL = "sqlite+aiosqlite:///./legadrop.db"
+#postgresql+asyncpg://lega_drop:hoophoop2002@localhost:5432/lega_drop_db
+#sqlite+aiosqlite:///./legadrop.db
+DATABASE_URL = "postgresql+asyncpg://lega_drop:hoophoop2002@localhost:5432/lega_drop_db"
+
+
 engine = create_async_engine(DATABASE_URL, echo=False, future=True)
 SessionLocal = async_sessionmaker(bind=engine, class_=AsyncSession, expire_on_commit=False)
 Base = declarative_base()
