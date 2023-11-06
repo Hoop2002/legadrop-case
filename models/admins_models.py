@@ -14,6 +14,7 @@ from .models import (
     Expenditure,
     UserToken,
     Test,
+    AdminPanelUser,
 )
 
 
@@ -42,7 +43,7 @@ class ItemCompoundAdmin(ModelView, model=ItemCompound):
 
 
 class TestAdmin(ModelView, model=Test):
-    column_list = [Test.id, Test.name]
+    column_list = "__all__"
 
 
 class RoleAdmin(ModelView, model=Role):
@@ -66,4 +67,7 @@ class CaseAdmin(ModelView, model=Case):
 
 
 class ItemAdmin(ModelView, model=Item):
+    column_list = "__all__"
+
+class AdminPanelUserAdmin(ModelView, model=AdminPanelUser):
     column_list = "__all__"

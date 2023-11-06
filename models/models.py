@@ -35,6 +35,13 @@ admin_roles = Table(
     Column("admin_id", String, ForeignKey("administrators.admin_id"), primary_key=True),
 )
 
+class AdminPanelUser(Base):
+    __tablename__ = "admin_panel_user"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    login  = Column(String, unique=True)
+    password = Column(String)
+    token = Column(String, unique=True)
 
 class Role(Base):
     __tablename__ = "roles"
@@ -153,7 +160,8 @@ class Item(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     item_id = Column(String, unique=True, default=generator_id)
     name = Column(String)
-    cost = Column(Integer)
+    cost = Column(DECIMAL)
+    cost_in_rubles = Column(DECIMAL)
     gem_cost = Column(Integer)
     color = Column(String)
     image = Column(String)
@@ -198,6 +206,7 @@ class User(Base):
     )
     social_accounts = relationship("SocialAuth", back_populates="user")
     tokens = relationship("UserToken", back_populates="user")
+    individual_percent = Column(DECIMAL, default=1.0)
 
 
 class SocialAuth(Base):
