@@ -178,9 +178,14 @@ from models.admins_models import (
     DepositAdmin,
     ExpenditureAdmin,
     UserTokenAdmin,
+    AdminPanelUserAdmin,
 )
 
-admin = Admin(app, engine)
+from admin_back_auth import AdminAuth
+
+back_auth = AdminAuth(secret_key="admin")
+
+admin = Admin(app, engine, authentication_backend=back_auth, base_url="/admin_panel")
 
 admin.add_view(RoleAdmin)
 admin.add_view(PermissionAdmin)
@@ -194,6 +199,7 @@ admin.add_view(SocialAuthAdmin)
 admin.add_view(DepositAdmin)
 admin.add_view(ExpenditureAdmin)
 admin.add_view(UserTokenAdmin)
+admin.add_view(AdminPanelUserAdmin)
 
 
 if __name__ == "__main__":
