@@ -150,9 +150,10 @@ class RarityCategory(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String)
     category_id = Column(String, unique=True, default=generator_id)
-    category_percent = Column(Integer) # групповой процент
+    category_percent = Column(DECIMAL) # групповой процент
     item = relationship("Item", back_populates="rarity_category")
-    
+    ext_id = Column(String, unique=True)
+        
 
 class Item(Base):
     __tablename__ = "items"
@@ -168,7 +169,7 @@ class Item(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
     step_down_factor = Column(DECIMAL) # если коофициент ниже 1.0 то кооф будет понижать
     
-    rarity_category_id = Column(String, ForeignKey("rarity_category.category_id"))
+    rarity_id = Column(String, ForeignKey("rarity_category.ext_id"))
     rarity_category = relationship("RarityCategory", back_populates="item")
 
     compound = relationship("ItemCompound", back_populates="item")

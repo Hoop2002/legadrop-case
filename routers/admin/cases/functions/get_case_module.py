@@ -9,7 +9,7 @@ async def get_case(case_id: str):
         result = await session.execute(
             select(Case).options(joinedload(Case.category)).filter_by(case_id=case_id)
         )
-        return result.scalars().first()
+        return result.scalars().unique().first()
 
 async def get_case_by_name(name: str) -> Optional[Case]:
     async with get_session() as session:

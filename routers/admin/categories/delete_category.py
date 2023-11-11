@@ -11,5 +11,5 @@ async def delete_category_(data: RequestCategoryDelete):
     if not category:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Категория не найдена")
     if await delete_category(category_id = data.category_id):
-        return HTTPException(status_code=status.HTTP_200_OK, detail="Категорие успешно удалено")
-    else: return HTTPException(status_code=status.HTTP_200_OK, detail="Категорие не удалено")
+        return HTTPException(status_code=status.HTTP_200_OK, detail="Категория успешно удаленна")
+    else: return HTTPException(status_code=status.HTTP_200_OK, detail="Категория не удаленна")

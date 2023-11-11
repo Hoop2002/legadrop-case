@@ -1,42 +1,4 @@
-from database.database import get_session
-from models.models import Item, ItemCompound
-
-
-async def save_data(data, costs):
-    async with get_session() as session:
-        for item_name, elements in data.items():
-            new_item = Item(name=item_name)
-            cost = 0.0
-
-            session.add(new_item)
-            await session.flush()
-
-            for element_name, quantities in elements.items():
-                for quantity in quantities:
-                    for name, price in costs.items():
-                        if name == element_name:
-                            cost += price * quantity
-
-                    new_compound = ItemCompound(
-                        name=element_name, quantity=quantity, item_id=new_item.item_id
-                    )
-                    session.add(new_compound)
-
-            new_item.cost = round(cost, 2)
-
-        await session.commit()
-
-
-costs = {
-    "60": 0.83,
-    "330": 4.23,
-    "1090": 12.72,
-    "2240": 27.59,
-    "3880": 42.46,
-    "8080": 84.94,
-}
-
-data = {
+{
     "60": {"60": [1]},
     "330": {"330": [1]},
     "660": {"330": [2]},
@@ -84,10 +46,5 @@ data = {
     "10650": {"8080": [1], "2240": [1], "330": [1]},
     "11410": {"8080": [1], "2240": [1], "1090": [1]},
     "12020": {"8080": [1], "3880": [1], "60": [1]},
-    "12290": {"8080": [1], "3880": [1], "330": [1]},
+    "12290": {"8080": [1], "3880": [1], "330": [1]}
 }
-
-
-import asyncio
-
-asyncio.run(save_data(data, costs))

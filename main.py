@@ -76,6 +76,8 @@ from routers.main.auth import user_sign_up, user_sign_in, user_auth_google
 
 from routers.spec import password_generator
 
+from routers.main.case import opening_case
+
 app = FastAPI(
     title="Legadrop administration API",
     description="API для администрирования Legasdrop",
@@ -100,6 +102,8 @@ def root():
 app.mount("/images/user/", StaticFiles(directory="images/users"), name="images")
 app.mount("/images/case/", StaticFiles(directory="images/cases"), name="images")
 app.mount("/images/items/", StaticFiles(directory="images/items"), name="images")
+
+app.include_router(opening_case, tags=["randomaizer/opening_case"], prefix="/randomaizer")
 
 app.include_router(admin_sign_in, tags=["admin"], prefix="/admin")
 app.include_router(admin_me, tags=["admin"], prefix="/admin")
@@ -146,6 +150,7 @@ app.include_router(get_cases_items, tags=["admin/case/items"], prefix="/admin")
 app.include_router(get_case_items, tags=["admin/case/items"], prefix="/admin")
 app.include_router(get_case_item, tags=["admin/case/items"], prefix="/admin")
 app.include_router(delete_case_item, tags=["admin/case/items"], prefix="/admin")
+
 
 app.include_router(user_sign_up, tags=["main"])
 app.include_router(user_sign_in, tags=["main"])
