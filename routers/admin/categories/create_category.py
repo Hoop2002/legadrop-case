@@ -5,7 +5,7 @@ from .functions import create_category, get_category_by_name
 router = APIRouter()
 
 
-@router.post("/category", response_model=ResponceCategory)
+@router.post("/category")
 async def create_category_(data: RequestCreateCategory):
     category = await get_category_by_name(data.name)
     if category:

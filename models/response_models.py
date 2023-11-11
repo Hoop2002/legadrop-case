@@ -32,7 +32,11 @@ class ResponseItem(BaseModel):
     color: str
     image: str
     created_at: datetime
-
+    rarity_id: str
+    compound: list
+    cost_in_rubles: str
+    step_down_factor: float
+    
 
 class ResponseItems(BaseModel):
     items: List[ResponseItem]

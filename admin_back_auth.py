@@ -23,15 +23,17 @@ class AdminAuth(AuthenticationBackend):
         # Validate username/password credentials
         # And update session
         async with get_session() as session:
-            admin_user = await session.execute(select(AdminPanelUser).filter_by(login=username))
-            admin = admin_user.scalars().one()
+            try:
+                admin_user = await session.execute(select(AdminPanelUser).filter_by(login=username))
+                admin = admin_user.scalars().one()                
             #print(admin)
-            if password == admin.password:
-                request.session.update({"token": admin.token})
-                return True
-            else: 
+                if password == admin.password:
+                    request.session.update({"token": admin.token})
+                    return True
+                else: 
+                    return False
+            except:
                 return False
-
     async def logout(self, request: Request) -> bool:
         # Usually you'd want to just clear the session
         request.session.clear()

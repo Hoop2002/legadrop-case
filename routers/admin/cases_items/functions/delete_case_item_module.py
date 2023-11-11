@@ -2,7 +2,7 @@ from fastapi import HTTPException, status
 from database import get_session
 from .get_case_items_module import get_case_items
 from routers.admin.items.functions import get_item
-
+from models import Item, Case
 
 async def delete_case_item(case_id: str, item_id: str):
     async with get_session() as session:
@@ -16,6 +16,7 @@ async def delete_case_item(case_id: str, item_id: str):
 
         if item in case.items:
             case.items.remove(item)
+        
         
         await session.commit()
 
