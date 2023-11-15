@@ -41,5 +41,9 @@ async def get_items_by_groups(items: dict):
                 float(ULTRALEGENDARY.category_percent),
             ],
         )[-1]
-
         
+        
+        items_group_ = [item for item in items["items"] if item["rarity_id"] == GROUP.ext_id]
+        group_ext = GROUP.ext_id
+        
+        return items_group_, group_ext

@@ -5,7 +5,9 @@ from models import User, UserCreate
 async def create_user(user_data: UserCreate) -> User:
     async with get_session() as session:
         created_user = User(**user_data.model_dump())
+        print(create_user)
         session.add(created_user)
+        await session.commit()
 
     return created_user
 

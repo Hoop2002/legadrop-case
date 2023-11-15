@@ -19,6 +19,7 @@ class ResponseToken(BaseModel):
 @router.post("/sign-in", response_model = ResponseToken)
 async def admin_sign_in(data: OAuth2PasswordRequestForm = Depends()):
 	admin_data = await get_by_username(data.username) or await get_by_email(data.username)
+	
 	if admin_data is None:
 		raise HTTPException(detail="Неверное имя пользователя или почта", status_code = status.HTTP_400_BAD_REQUEST)
 	

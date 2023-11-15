@@ -167,7 +167,7 @@ class Item(Base):
     color = Column(String)
     image = Column(String)
     created_at = Column(DateTime, default=datetime.utcnow)
-    step_down_factor = Column(DECIMAL) # если коофициент ниже 1.0 то кооф будет понижать
+    step_down_factor = Column(DECIMAL, default=1.0) # если коофициент ниже 1.0 то кооф будет понижать
     
     rarity_id = Column(String, ForeignKey("rarity_category.ext_id"))
     rarity_category = relationship("RarityCategory", back_populates="item")
