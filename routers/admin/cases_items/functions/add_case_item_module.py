@@ -2,7 +2,10 @@ from fastapi import HTTPException, status
 from database import get_session
 from .get_case_items_module import get_case_items
 from routers.admin.items.functions import get_item
-
+from models import Case, Item
+from models.models import case_items
+from sqlalchemy.exc import NoResultFound
+from sqlalchemy import select, update
 
 async def add_case_item(case_id: str, item_id: str):
     async with get_session() as session:
@@ -29,3 +32,26 @@ async def add_case_item(case_id: str, item_id: str):
         await session.commit()
 
         return case, item
+
+async def _add_items_in_case(case):
+    async with get_session() as session:
+        case_id = case.get("case_id")
+        items_ = case.pop("items")
+        try:
+
+            case_ = await session.execute(select(Case).filter_by(case_id=case_id))
+            case_obj = case_.scalar_one_or_none()
+            
+            for item in items_:
+                item_ = await session.execute(select(Item).filter_by(item_id=item['item_id']))
+                item_obj = item_.scalar_one_or_none()
+                
+                await session.execute(case_items.insert(), [{'case_id': case_obj.case_id, "item_id": item_obj.item_id}])
+            await session.commit()
+            case["items"] = items_
+            
+            return case
+        except NoResultFound:
+            return HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Категория {case_id} не найденa!")
+        
+        

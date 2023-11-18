@@ -21,3 +21,10 @@ async def create_case_(name: str = Form(...), category_id: str= Form(...), image
     case = await create_case(name=name, image=str(image_path), category_id=category_id)
     
     return case
+
+from models.request_models import CreateCases
+from .functions import _create_case_items
+@router.post("/case/create")
+async def create_case_list(case: CreateCases):
+    case_ = await _create_case_items(case=case.model_dump())
+    return case_
