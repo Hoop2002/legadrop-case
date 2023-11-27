@@ -1,4 +1,4 @@
-from sqlalchemy import select
+from sqlalchemy import select, delete
 from typing import Sequence, Optional
 from database import get_session
 from models import Item
@@ -26,22 +26,25 @@ async def get_item_by_name(name: str) -> Optional[Item]:
         result = await session.execute(select(Item).filter_by(name=name))
         return result.scalars().first()
 
-async def update_item(item_id: str, name: str, image: str) -> Optional[Item]:
-    async with get_session() as session:
-        result = await session.execute(select(Item).filter_by(item_id=item_id))
-        item = result.scalars().first()
-        item.name = name  # type: ignore
-        item.image = image  # type: ignore
-        await session.commit()
-        await session.refresh(item)
-        return item
+#async def update_item(item_id: str, name: str, image: str) -> Optional[Item]:
+#    async with get_session() as session:
+#        result = await session.execute(select(Item).filter_by(item_id=item_id))
+#        item = result.scalars().first()
+#        item.name = name  # type: ignore
+#        item.image = image  # type: ignore
+#        await session.commit()
+#        await session.refresh(item)
+#        return item
 
 async def delete_item(item_id: str) -> bool:
     async with get_session() as session:
-        result = await session.execute(select(Item).filter_by(item_id=item_id))
-        item = result.scalars().first()
-        if item is None:
-            return False
-        await session.delete(item)
+        stmt = (
+            delete(Item).
+            where(Item.item_id == item_id).
+            returning(Item)
+        )
+
+        item = await session.execute(stmt)
         await session.commit()
-        return True
+        item = item.scalar_one_or_none()
+        return item

@@ -18,6 +18,7 @@ async def create_case_(name: str = Form(...), category_id: str= Form(...), image
         content = await image.read()
         buffer.write(content)
 
+    image_path = f"images/case/{name}.jpg"
     case = await create_case(name=name, image=str(image_path), category_id=category_id)
     
     return case

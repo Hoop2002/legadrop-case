@@ -42,8 +42,8 @@ from routers.admin.cases import (
     create_case,
     get_cases,
     get_case,
-    delete_case
-
+    delete_case,
+    update_case
 )
 from routers.admin.items import (
     create_item,
@@ -72,6 +72,9 @@ from routers.main.user.profile import (
     update_me_image,
     change_password,
 )
+
+from routers.admin.group_category import rarity_group
+
 from routers.main.auth import user_sign_up, user_sign_in, user_auth_google
 
 from routers.spec import password_generator
@@ -136,7 +139,10 @@ app.include_router(delete_category, tags=["admin/categories"], prefix="/admin")
 app.include_router(create_case, tags=["admin/cases"], prefix="/admin")
 app.include_router(get_cases, tags=["admin/cases"], prefix="/admin")
 app.include_router(get_case, tags=["admin/cases"], prefix="/admin")
+app.include_router(update_case, tags=["admin/cases"], prefix="/admin")
+app.include_router(delete_case, tags=["admin/cases"], prefix="/admin")
 
+app.include_router(rarity_group, tags=["admin/rarity"], prefix="/admin")
 
 app.include_router(create_item, tags=["admin/items"], prefix="/admin")
 app.include_router(get_items, tags=["admin/items"], prefix="/admin")
@@ -144,6 +150,7 @@ app.include_router(get_item, tags=["admin/items"], prefix="/admin")
 app.include_router(get_item_id, tags=["admin/items"], prefix="/admin")
 app.include_router(update_item, tags=["admin/items"], prefix="/admin")
 app.include_router(delete_item, tags=["admin/items"], prefix="/admin")
+
 
 app.include_router(add_case_item, tags=["admin/case/items"], prefix="/admin")
 app.include_router(get_cases_items, tags=["admin/case/items"], prefix="/admin")

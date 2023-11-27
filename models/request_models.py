@@ -31,3 +31,8 @@ class CreateCases(BaseModel):
 class AddItemsInOneCase(BaseModel):
     case_id: str
     items: List[ListItems]
+
+class RarityCategoryUPD(BaseModel):
+    rarity_id: str
+    category_percent: str
+    name: str

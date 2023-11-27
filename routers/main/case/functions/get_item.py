@@ -1,3 +1,4 @@
+from difflib import restore
 from token import RARROW
 from sqlalchemy.future import select
 from database import get_session
@@ -25,8 +26,12 @@ async def get_item(items, uid, group_id):
         coefficients = []
         for item in items:
             coef = await session.execute(select(Item).filter_by(item_id=item["item_id"]))
-
+            
+            if not coef:
+                return HTTPException(status_code=404, detail="Внутренняя ошибка сервера обратитесь к Технической поддержке")
+            
             coef_id = coef.scalar_one_or_none()
+        
             coef_item = coef_id.step_down_factor
 
             if user_percent is None:

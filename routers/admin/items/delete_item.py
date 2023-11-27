@@ -12,5 +12,5 @@ async def delete_item_(data: RequestItemDelete):
     if not item:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Предмет не найден")
 
-    await delete_item(item_id=data.item_id)
-    return {"detail": "Предмет успешно удален"}
+    item = await delete_item(item_id=data.item_id)
+    return {"data": item, "detail": "Предмет успешно удален"}

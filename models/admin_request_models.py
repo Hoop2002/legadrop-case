@@ -59,9 +59,7 @@ class RequestItemName(BaseModel):
 
 
 class RequestItemUpdate(BaseModel):
-    item_id: str
-    name: str
-    image: str
+    data: dict
 
 
 class RequestItemDelete(BaseModel):
