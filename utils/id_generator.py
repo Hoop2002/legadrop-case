@@ -11,7 +11,7 @@ def id_genrator():
     second = random.choice(string.ascii_lowercase)
     third = random.choice(string.digits)
     alphabet = string.ascii_letters + string.digits
-    remaining = ''.join(random.choice(alphabet) for _ in range(6))
+    remaining = "".join(random.choice(alphabet) for _ in range(6))
     return first + second + third + remaining
 
 

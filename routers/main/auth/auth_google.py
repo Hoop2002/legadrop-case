@@ -16,7 +16,7 @@ from models import (
     UserSignUp,
     GoogleAuth,
     ResponseToken,
-    ResponseTokenPassword
+    ResponseTokenPassword,
 )
 
 router = APIRouter()

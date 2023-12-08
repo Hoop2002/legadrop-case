@@ -15,6 +15,8 @@ from .models import (
     UserToken,
     Test,
     AdminPanelUser,
+    ItemsFindings,
+    ItemsFindingsStatus,
 )
 
 
@@ -69,5 +71,14 @@ class CaseAdmin(ModelView, model=Case):
 class ItemAdmin(ModelView, model=Item):
     column_list = "__all__"
 
+
 class AdminPanelUserAdmin(ModelView, model=AdminPanelUser):
+    column_list = "__all__"
+
+
+class AdminItemsFindings(ModelView, model=ItemsFindings):
+    column_list = "__all__"
+
+
+class AdminItemsFindingsStatus(ModelView, model=ItemsFindingsStatus):
     column_list = "__all__"

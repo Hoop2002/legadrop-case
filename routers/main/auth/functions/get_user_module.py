@@ -5,7 +5,6 @@ from database import get_session
 from models import User, SocialAuth, UserData
 
 
-
 async def _get_user_by_field(field_name: str, value: str) -> Union[UserData, None]:
     async with get_session() as session:
         try:
@@ -39,7 +38,7 @@ async def get_user_by_social_id(social_id: str) -> Union[User, None]:
         )
         try:
             result = await session.execute(statement)
-            user_data = await result.scalar_one() # type: ignore
+            user_data = await result.scalar_one()  # type: ignore
             return user_data
         except NoResultFound:
             return None

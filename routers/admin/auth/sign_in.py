@@ -16,17 +16,21 @@ class ResponseToken(BaseModel):
     token_type: str = "bearer"
 
 
-@router.post("/sign-in", response_model = ResponseToken)
+@router.post("/sign-in", response_model=ResponseToken)
 async def admin_sign_in(data: OAuth2PasswordRequestForm = Depends()):
-	admin_data = await get_by_username(data.username) or await get_by_email(data.username)
-	
-	if admin_data is None:
-		raise HTTPException(detail="Неверное имя пользователя или почта", status_code = status.HTTP_400_BAD_REQUEST)
-	
-	admin_id = admin_data.admin_id
-	password_hash = admin_data.password_hash
+    admin_data = await get_by_username(data.username) or await get_by_email(
+        data.username
+    )
 
+    if admin_data is None:
+        raise HTTPException(
+            detail="Неверное имя пользователя или почта",
+            status_code=status.HTTP_400_BAD_REQUEST,
+        )
 
-	await verify_password(password_hash, data.password)
-	token = await create_admin_token(admin_id)
-	return {"access_token": token, "token_type": "bearer"}
+    admin_id = admin_data.admin_id
+    password_hash = admin_data.password_hash
+
+    await verify_password(password_hash, data.password)
+    token = await create_admin_token(admin_id)
+    return {"access_token": token, "token_type": "bearer"}

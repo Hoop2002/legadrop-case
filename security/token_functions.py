@@ -22,31 +22,38 @@ KID = "1"
 admin_oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/admin/sign-in")
 user_oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/sign-in")
 
+
 async def create_admin_token(admin_id: str) -> str:
     payload = {
         "sub": admin_id,
         "exp": datetime.utcnow() + timedelta(minutes=TOKEN_EXP),
-        "iss": "legadrop.org", 
+        "iss": "legadrop.org",
     }
     headers = {"kid": KID}
     try:
-        token = jwt.encode(payload, ADMINSECRET , algorithm=ALGORITHM, headers=headers) # type: ignore
+        token = jwt.encode(payload, ADMINSECRET, algorithm=ALGORITHM, headers=headers)  # type: ignore
         return token
     except JWTError:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Побробуйте позже")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="Побробуйте позже"
+        )
 
 
 async def verify_admin(token: str = Depends(admin_oauth2_scheme)) -> RequestAdminID:
     try:
-        payload = jwt.decode(token, key=ADMINSECRET, algorithms=[ALGORITHM]) # type: ignore
+        payload = jwt.decode(token, key=ADMINSECRET, algorithms=[ALGORITHM])  # type: ignore
         token_data = TokenData(**payload)
         admin_id = token_data.sub
         response = RequestAdminID(admin_id=admin_id)
         return response
     except ExpiredSignatureError:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Токен просрочен")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="Токен просрочен"
+        )
     except JWTError:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Недействительный токен")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="Недействительный токен"
+        )
 
 
 async def create_user_token(user_id: str) -> str:
@@ -57,10 +64,13 @@ async def create_user_token(user_id: str) -> str:
     }
     headers = {"kid": KID}
     try:
-        token = jwt.encode(payload, USERSECRTE , algorithm=ALGORITHM, headers=headers)
+        token = jwt.encode(payload, USERSECRTE, algorithm=ALGORITHM, headers=headers)
         return token
     except JWTError:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Побробуйте позже")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="Побробуйте позже"
+        )
+
 
 async def verify_user(token: str = Depends(user_oauth2_scheme)) -> str:
     try:
@@ -68,6 +78,10 @@ async def verify_user(token: str = Depends(user_oauth2_scheme)) -> str:
         token_data = TokenData(**payload)
         return token_data.sub
     except ExpiredSignatureError:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Токен просрочен")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="Токен просрочен"
+        )
     except JWTError:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Недействительный токен")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="Недействительный токен"
+        )

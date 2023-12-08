@@ -1,6 +1,7 @@
 from typing import Optional, List
 from pydantic import BaseModel, EmailStr
 
+
 class AdminMe(BaseModel):
     admin_id: str
     username: str
@@ -8,6 +9,7 @@ class AdminMe(BaseModel):
     last_name: str
     email: EmailStr
     image: str
+
 
 class AdminData(BaseModel):
     admin_id: str
@@ -21,6 +23,7 @@ class AdminData(BaseModel):
 class AdminDataList(BaseModel):
     employees: List[AdminData]
 
+
 class AdminCreate(BaseModel):
     username: str
     first_name: Optional[str] = None
@@ -29,6 +32,7 @@ class AdminCreate(BaseModel):
     password_hash: str
     image: Optional[str] = "http://localhost:8000/pictures/user.jpg"
 
+
 class AdminUpdate(BaseModel):
     username: Optional[str] = None
     first_name: Optional[str] = None
@@ -36,4 +40,3 @@ class AdminUpdate(BaseModel):
     email: Optional[EmailStr] = None
     password_hash: Optional[str] = None
     image: Optional[str] = None
-

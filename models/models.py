@@ -1,5 +1,7 @@
+from ast import Str
 from datetime import datetime
 from email.policy import default
+from tokenize import Comment
 from sqlalchemy import (
     Boolean,
     Column,
@@ -35,13 +37,15 @@ admin_roles = Table(
     Column("admin_id", String, ForeignKey("administrators.admin_id"), primary_key=True),
 )
 
+
 class AdminPanelUser(Base):
     __tablename__ = "admin_panel_user"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    login  = Column(String, unique=True)
+    login = Column(String, unique=True)
     password = Column(String)
     token = Column(String, unique=True)
+
 
 class Role(Base):
     __tablename__ = "roles"
@@ -136,13 +140,15 @@ class Case(Base):
 
 
 class ItemCompound(Base):
-    __tablename__ = 'item_compounds'
+    __tablename__ = "item_compounds"
     id = Column(Integer, primary_key=True)
     name = Column(String)
     quantity = Column(Integer)
-    item_id = Column(String, ForeignKey('items.item_id'))
-    
+    item_id = Column(String, ForeignKey("items.item_id"))
+    moogold_id = Column(String)
+    test = Column(String)
     item = relationship("Item", back_populates="compound")
+
 
 class RarityCategory(Base):
     __tablename__ = "rarity_category"
@@ -150,10 +156,10 @@ class RarityCategory(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String)
     category_id = Column(String, unique=True, default=generator_id)
-    category_percent = Column(DECIMAL) # групповой процент
+    category_percent = Column(DECIMAL)  # групповой процент
     item = relationship("Item", back_populates="rarity_category")
     ext_id = Column(String, unique=True)
-        
+
 
 class Item(Base):
     __tablename__ = "items"
@@ -167,8 +173,10 @@ class Item(Base):
     color = Column(String)
     image = Column(String)
     created_at = Column(DateTime, default=datetime.utcnow)
-    step_down_factor = Column(DECIMAL, default=1.0) # если коофициент ниже 1.0 то кооф будет понижать
-    
+    step_down_factor = Column(
+        DECIMAL, default=1.0
+    )  # если коофициент ниже 1.0 то кооф будет понижать
+
     rarity_id = Column(String, ForeignKey("rarity_category.ext_id"))
     rarity_category = relationship("RarityCategory", back_populates="item")
 
@@ -178,12 +186,14 @@ class Item(Base):
         "User", secondary=user_inventory, back_populates="inventory_items"
     )
 
+
 class Test(Base):
     __tablename__ = "test"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String)
     test = Column(String)
+
 
 class User(Base):
     __tablename__ = "users"
@@ -246,6 +256,27 @@ class UserToken(Base):
     date_created = Column(DateTime, default=datetime.utcnow)
     date_expired = Column(DateTime)
     user = relationship("User", back_populates="tokens")
+
+
+class ItemsFindingsStatus(Base):
+    __tablename__ = "items_findings_status"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    status_id = Column(String, default=generator_id)
+    name = Column(String)
+    ext_id = Column(String, unique=True)
+
+
+class ItemsFindings(Base):
+    __tablename__ = "items_findings"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    itemfs_id = Column(String, unique=True, default=generator_id)
+    user_id = Column(String, ForeignKey("users.user_id"))
+    item_id = Column(String, ForeignKey("items.item_id"))
+    genshin_user_id = Column(String, unique=True)
+    status = Column(String, ForeignKey("items_findings_status.ext_id"))
+    active = Column(Boolean, default=True)
 
 
 # from sqlalchemy import Table, ForeignKey, Column, Integer, String, Boolean, DateTime, DECIMAL

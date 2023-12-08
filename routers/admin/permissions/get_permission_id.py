@@ -4,6 +4,7 @@ from models import RequestPermissionID, ResponsePermission
 
 router = APIRouter()
 
+
 @router.get("/permission-id", response_model=ResponsePermission)
 async def get_permission_id_(data: RequestPermissionID):
     permission = await get_permission_id(data.permission)

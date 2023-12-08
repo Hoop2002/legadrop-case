@@ -7,6 +7,6 @@ router = APIRouter()
 
 
 @router.get("/user/me")
-async def user_me(user_id = Depends(verify_user)):
+async def user_me(user_id=Depends(verify_user)):
     user_data = await get_me(user_id=user_id)
     return user_data

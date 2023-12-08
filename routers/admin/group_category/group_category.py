@@ -8,6 +8,7 @@ from models import RarityCategory, RarityCategoryUPD
 
 router = APIRouter()
 
+
 @router.get("/group_category")
 async def get_group_category():
     async with get_session() as session:
@@ -20,20 +21,23 @@ async def get_group_category():
 @router.post("/group_category/update")
 async def rarity_update(data: RarityCategoryUPD):
     kw = data.model_dump()
-    
+
     async with get_session() as session:
         data = data.model_dump()
-    
-        rarity = await session.execute(select(RarityCategory).filter_by(category_id=data['rarity_id']))
+
+        rarity = await session.execute(
+            select(RarityCategory).filter_by(category_id=data["rarity_id"])
+        )
         rarity_sc = rarity.scalar_one_or_none()
 
-
         if not rarity_sc:
-            return HTTPException(status_code=404, detail="Категория редкости не найдена!")
+            return HTTPException(
+                status_code=404, detail="Категория редкости не найдена!"
+            )
 
-        rarity_sc.category_percent = kw['category_percent']
-        rarity_sc.name = kw['name']
-    
+        rarity_sc.category_percent = kw["category_percent"]
+        rarity_sc.name = kw["name"]
+
         await session.commit()
-        
+
         return rarity_sc

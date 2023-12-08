@@ -1,5 +1,6 @@
 from database.database import get_session
 from models.models import Item, ItemCompound
+from routers.integration import moogold
 
 
 async def save_data(data, costs):
@@ -7,18 +8,24 @@ async def save_data(data, costs):
         for item_name, elements in data.items():
             new_item = Item(name=item_name)
             cost = 0.0
-
+            moogold_id = ""
             session.add(new_item)
             await session.flush()
 
             for element_name, quantities in elements.items():
                 for quantity in quantities:
-                    for name, price in costs.items():
+                    for name, dictionary in costs.items():
+                        price = dictionary["cost"]
+
                         if name == element_name:
+                            moogold_id = dictionary["moogold_id"]
                             cost += price * quantity
 
                     new_compound = ItemCompound(
-                        name=element_name, quantity=quantity, item_id=new_item.item_id
+                        name=element_name,
+                        quantity=quantity,
+                        item_id=new_item.item_id,
+                        moogold_id=moogold_id,
                     )
                     session.add(new_compound)
 
@@ -28,12 +35,12 @@ async def save_data(data, costs):
 
 
 costs = {
-    "60": 0.83,
-    "330": 4.23,
-    "1090": 12.72,
-    "2240": 27.59,
-    "3880": 42.46,
-    "8080": 84.94,
+    "60": {"cost": 0.83, "moogold_id": "673095"},
+    "330": {"cost": 4.23, "moogold_id": "673096"},
+    "1090": {"cost": 12.72, "moogold_id": "673097"},
+    "2240": {"cost": 27.59, "moogold_id": "673098"},
+    "3880": {"cost": 42.46, "moogold_id": "673099"},
+    "8080": {"cost": 84.94, "moogold_id": "673100"},
 }
 
 data = {

@@ -4,6 +4,8 @@ from models import ResponsePermissions
 
 
 router = APIRouter()
+
+
 # @router.get("/permissions", response_model=ResponsePermissions)
 @router.get("/permissions")
 async def get_permissions_():

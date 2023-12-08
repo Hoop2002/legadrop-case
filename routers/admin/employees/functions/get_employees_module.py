@@ -5,10 +5,11 @@ from database import get_session
 
 
 async def get_employees():
-	async with get_session() as session:
-		result = await session.execute(select(Administrator))
-		employees = result.scalars().all()
-		return  employees
+    async with get_session() as session:
+        result = await session.execute(select(Administrator))
+        employees = result.scalars().all()
+        return employees
+
 
 async def get_emoployees_data():
     async with get_session() as session:
@@ -17,5 +18,7 @@ async def get_emoployees_data():
         )
         admins = result.scalars().unique().all()
 
-        admins_with_roles = [{"employee": admin, "role": admin.roles} for admin in admins]
+        admins_with_roles = [
+            {"employee": admin, "role": admin.roles} for admin in admins
+        ]
         return admins_with_roles

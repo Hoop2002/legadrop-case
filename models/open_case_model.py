@@ -6,6 +6,7 @@ class OpenCaseData(BaseModel):
     item_id: str
     rarity_id: str
 
+
 class User__data(BaseModel):
     uid: str
 

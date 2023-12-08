@@ -6,8 +6,11 @@ from models import Category
 
 async def get_category(category_id: str) -> Optional[Category]:
     async with get_session() as session:
-        result = await session.execute(select(Category).filter_by(category_id=category_id))
+        result = await session.execute(
+            select(Category).filter_by(category_id=category_id)
+        )
         return result.scalars().first()
+
 
 async def get_category_by_name(name: str) -> Optional[Category]:
     async with get_session() as session:

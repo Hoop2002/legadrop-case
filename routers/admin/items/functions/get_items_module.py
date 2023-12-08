@@ -10,6 +10,5 @@ async def get_items() -> Sequence[Item]:
     async with get_session() as session:
         result = await session.execute(select(Item).options(joinedload(Item.compound)))
         items = result.scalars().unique().all()
-       
-            
+
         return items
