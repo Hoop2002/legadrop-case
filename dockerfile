@@ -17,4 +17,4 @@ COPY ./main.py /project/main.py
 
 RUN pip install --no-cache-dir --upgrade -r /project/requirements.txt
 
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8001"]
+CMD ["gunicorn", "main:app", "--workers", "8", "--worker-class", "uvicorn.workers.UvicornWorker", "--bind", "127.0.0.1:8000"]
