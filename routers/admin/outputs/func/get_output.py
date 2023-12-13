@@ -22,7 +22,7 @@ async def get_outputs():
                 "genshin_user_id": output.genshin_user_id,
                 "itemfs_id": output.itemfs_id,
                 "user_id": output.user_id,
-                "username": user_.username,
+                "username": user_.username if user_.username else user_.email,
                 "active": output.active,
                 "total": output.total,
                 "id": output.id,
