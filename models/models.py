@@ -274,10 +274,17 @@ class ItemsFindings(Base):
     itemfs_id = Column(String, unique=True, default=generator_id)
     user_id = Column(String, ForeignKey("users.user_id"))
     item_id = Column(String, ForeignKey("items.item_id"))
-    genshin_user_id = Column(String, unique=True)
+    genshin_user_id = Column(String)
     status = Column(String, ForeignKey("items_findings_status.ext_id"))
     active = Column(Boolean, default=True)
+    moogoald_order_id = Column(String)
+    total = Column(DECIMAL)
 
+class OrderMoogold(Base):
+    __tablename__ = "order_moogold"
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    itemfs_id = Column(String, ForeignKey("items_findings.itemfs_id"))
+    order_id = Column(String)
 
 # from sqlalchemy import Table, ForeignKey, Column, Integer, String, Boolean, DateTime, DECIMAL
 # from sqlalchemy.orm import relationship
