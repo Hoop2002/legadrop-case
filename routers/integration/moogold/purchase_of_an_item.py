@@ -209,18 +209,17 @@ async def purchase_items(data: PurchaseMoogoldOutputOfTheItems):
                     try:
                         body = await response.text()
                         body_json = json.loads(body)
-                        try:
-                            await write_order_id_in_itemfs(
-                                itemfs=data_dict.get("itemfs_id"),
-                                order_id=body_json.get("order_id"),
+                        print(body_json)
+                        await write_order_id_in_itemfs(
+                                itemfs_id=data_dict.get("itemfs_id"),
+                                order_id=str(body_json.get("order_id"))
                             )
-                        except Exception as err:
-                            print(err)
+                        
                         response_data["data"].append(
                             {
                                 "Body": body_json,
                                 "Status": response.status,
-                                "Content-type": response.headers["content-type"],
+                                "Content-type": response.headers["content-type"]
                             }
                         )
                     except Exception as err:
@@ -231,7 +230,7 @@ async def purchase_items(data: PurchaseMoogoldOutputOfTheItems):
     return response_data
 
 
-@router.get("/api/v1/moogoald/{moogoald_order_id}/order")
+@router.get("/api/v1/moogold/{moogoald_order_id}/order")
 async def get_order(moogoald_order_id: str):
     async with ClientSession() as session:
         try:
@@ -273,7 +272,8 @@ async def get_order(moogoald_order_id: str):
             )
 
 
-@router.get("/api/v1/moogoald/{itemfs_id}/order/list")
+@router.get("/api/v1/moogold/{itemfs_id}/order/list")
 async def get_orders_itemfs_list(itemfs_id: str):
     result = await get_orders_list(itemfs_id=itemfs_id)
     return result
+
