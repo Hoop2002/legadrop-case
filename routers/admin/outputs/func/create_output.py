@@ -7,7 +7,7 @@ async def create_output_(outputs):
     async with get_session() as session:
         items_output = outputs.pop("outputs")
         genshin_id = outputs.get("genshin_user_id")
-        
+
         user = await session.execute(
             select(User).filter_by(user_id=outputs.get("user_id"))
         )
@@ -17,7 +17,6 @@ async def create_output_(outputs):
 
         user_ = user.scalar_one_or_none().user_id
         status_ = status.scalar_one_or_none().ext_id
-        
 
         for itemf in items_output:
             itemf["user_id"] = user_
@@ -31,7 +30,6 @@ async def create_output_(outputs):
             total_ = total.scalar_one_or_none().cost
 
             itemf["total"] = total_
-
 
         stmt = insert(ItemsFindings).values(items_output).returning(ItemsFindings)
 

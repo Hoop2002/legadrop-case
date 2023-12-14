@@ -1,7 +1,11 @@
 from urllib import response
 from fastapi import HTTPException, APIRouter, status
 from aiohttp import ClientSession
-from models.request_models import MoogoldOutputOfTheItem, MoogoldOutputOfTheItems, PurchaseMoogoldOutputOfTheItems
+from models.request_models import (
+    MoogoldOutputOfTheItem,
+    MoogoldOutputOfTheItems,
+    PurchaseMoogoldOutputOfTheItems,
+)
 
 import time
 import hmac
@@ -11,7 +15,15 @@ import json
 import os
 
 
-from .func import get_server, get_item, get_items_key_moogold, get_itemfs, change_status_output, write_order_id_in_itemfs, get_orders_list
+from .func import (
+    get_server,
+    get_item,
+    get_items_key_moogold,
+    get_itemfs,
+    change_status_output_moogold,
+    write_order_id_in_itemfs,
+    get_orders_list,
+)
 
 
 SECRET_KEY = os.getenv("MOOGOLD_SECRET_KEY")
@@ -82,15 +94,15 @@ async def purchase(data: MoogoldOutputOfTheItem):
                         headers=headers,
                     ) as response:
                         body = await response.text()
-                        print(body)
+                        
                         return {
                             "Body": json.loads(
-                                body.replace("\n", "").replace("\r", "").strip()
+                                body
                             ),
                             "Status": response.status,
                             "Content-type": response.headers["content-type"],
                         }
-                        
+
         except:
             return HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST, detail="BAD REQUEST"
@@ -130,7 +142,7 @@ async def moogold_balance():
                 body = await response.text()
                 return {
                     "Body": json.loads(
-                        body.replace("\n", "").replace("\r", "").strip()
+                        body
                     ),
                     "Status": response.status,
                     "Content-type": response.headers["content-type"],
@@ -149,82 +161,79 @@ async def purchase_items(data: PurchaseMoogoldOutputOfTheItems):
 
     if not itemfs:
         return HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND, detail="itemfs not found"
-            )
-    
+            status_code=status.HTTP_404_NOT_FOUND, detail="itemfs not found"
+        )
+
     moogold_items = await get_items_key_moogold(itemfs.item_id)
 
     response_data = {"data": []}
 
     async with ClientSession() as session:
-            for i in moogold_items:
-                for j in i:
-                    order = {
-                        "path": "order/create_order",
-                        "data": {
-                            "category": GENSHIN_CATEGORY,
-                            "product-id": j,
-                            "quantity": "1",
-                            "User ID": itemfs.genshin_user_id,
-                            "Server": server_name,
-                        },
-                    }
-                    order_json = json.dumps(order)
-                    timestamp = str(int(time.time()))
-                    path = "order/create_order"
-                    string_to_sign = order_json + timestamp + path
-                    auth = hmac.new(
-                        bytes(SECRET_KEY, "utf-8"),
-                        msg=string_to_sign.encode("utf-8"),
-                        digestmod=hashlib.sha256,
-                    ).hexdigest()
-                    auth_basic = base64.b64encode(
-                        f"{PARTNER_ID}:{SECRET_KEY}".encode()
-                    ).decode()
+        for i in moogold_items:
+            for j in i:
+                order = {
+                    "path": "order/create_order",
+                    "data": {
+                        "category": GENSHIN_CATEGORY,
+                        "product-id": j,
+                        "quantity": "1",
+                        "User ID": itemfs.genshin_user_id,
+                        "Server": server_name,
+                    },
+                }
+                order_json = json.dumps(order)
+                timestamp = str(int(time.time()))
+                path = "order/create_order"
+                string_to_sign = order_json + timestamp + path
+                auth = hmac.new(
+                    bytes(SECRET_KEY, "utf-8"),
+                    msg=string_to_sign.encode("utf-8"),
+                    digestmod=hashlib.sha256,
+                ).hexdigest()
+                auth_basic = base64.b64encode(
+                    f"{PARTNER_ID}:{SECRET_KEY}".encode()
+                ).decode()
 
-                    headers = {
-                        "timestamp": timestamp,
-                        "auth": auth,
-                        "Authorization": "Basic " + auth_basic,
-                        "Content-Type": "application/json",
-                    }
+                headers = {
+                    "timestamp": timestamp,
+                    "auth": auth,
+                    "Authorization": "Basic " + auth_basic,
+                    "Content-Type": "application/json",
+                }
 
+                async with session.post(
+                    "https://moogold.com/wp-json/v1/api/order/create_order",
+                    data=order_json,
+                    headers=headers,
+                ) as response:
+                    try:
+                        body = await response.text()
+                        body_json = json.loads(body)
+                        try:
+                            await write_order_id_in_itemfs(
+                                itemfs=data_dict.get("itemfs_id"),
+                                order_id=body_json.get("order_id"),
+                            )
+                        except Exception as err:
+                            print(err)
+                        response_data["data"].append(
+                            {
+                                "Body": body_json,
+                                "Status": response.status,
+                                "Content-type": response.headers["content-type"],
+                            }
+                        )
+                    except Exception as err:
+                        response_data["data"].append({"err": err, "moogold_item": j})
 
-                   
-                    async with session.post(
-                        "https://moogold.com/wp-json/v1/api/order/create_order",
-                        data=order_json,
-                        headers=headers,
-                        ) as response:
-                            try:
-                                body = await response.text()
-                                body_json = json.loads(body.replace("\n", "").replace("\r", "").strip())
-                                if not body_json.get("err_code", False):
-                                    await write_order_id_in_itemfs(itemfs=data_dict.get("itemfs_id"), order_id=body.get("order_id"))
+    await change_status_output_moogold(itemfs_id=itemfs.itemfs_id)
 
-                                response_data['data'].append({
-                                    "Body": body_json,
-                                    "Status": response.status,
-                                    "Content-type": response.headers["content-type"],
-                                })
-                            except Exception as err:
-                                response_data['data'].append({
-                                    'err': err,
-                                    "moogold_item": j
-                                })
-
-    await change_status_output(itemfs_id=itemfs.itemfs_id, status=u"MOOGOLD") 
-    
     return response_data
-                        
-                    
-    
-
 
 
 @router.get("/api/v1/moogoald/{moogoald_order_id}/order")
 async def get_order(moogoald_order_id: str):
-     async with ClientSession() as session:
+    async with ClientSession() as session:
         try:
             data = {"path": "order/order_detail", "order_id": moogoald_order_id}
 
@@ -254,9 +263,7 @@ async def get_order(moogoald_order_id: str):
             ) as response:
                 body = await response.text()
                 return {
-                    "Body": json.loads(
-                        body.replace("\n", "").replace("\r", "").strip()
-                    ),
+                    "Body": json.loads(body),
                     "Status": response.status,
                     "Content-type": response.headers["content-type"],
                 }
@@ -264,6 +271,7 @@ async def get_order(moogoald_order_id: str):
             return HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST, detail="BAD REQUEST"
             )
+
 
 @router.get("/api/v1/moogoald/{itemfs_id}/order/list")
 async def get_orders_itemfs_list(itemfs_id: str):

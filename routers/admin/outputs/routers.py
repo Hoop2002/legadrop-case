@@ -1,6 +1,12 @@
 from fastapi import HTTPException, APIRouter, status
 from models.request_models import OutputAllItemF
-from .func import create_output_, get_outputs, get_output_, delete_output_, inactive_output
+from .func import (
+    create_output_,
+    get_outputs,
+    get_output_,
+    delete_output_,
+    inactive_output,
+)
 
 router = APIRouter()
 
@@ -23,15 +29,17 @@ async def get_output(itemfs_id: str):
     return output
 
 
-#@router.delete("/api/v1/output/delete/{itemfs_id}")
-#async def delete_output(itemfs_id: str):
+# @router.delete("/api/v1/output/delete/{itemfs_id}")
+# async def delete_output(itemfs_id: str):
 #    del_output = await delete_output_(itemfs_id=itemfs_id)
 #    return del_output
 
-@router.put("/api/v1/output/{itemsf_id}/inactive")
+
+@router.put("/api/v1/output/{itemsf_id}/cancelled")
 async def output_inactive(itemsf_id):
     in_itemfs = await inactive_output(itemsf_id=itemsf_id)
     return in_itemfs
+
 
 async def update_status():
     pass

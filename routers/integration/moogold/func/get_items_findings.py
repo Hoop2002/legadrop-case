@@ -12,4 +12,3 @@ async def get_itemfs(itemfs_id: str):
         object_ = result.scalars().one_or_none()
 
         return object_
-    
