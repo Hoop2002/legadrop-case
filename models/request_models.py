@@ -55,8 +55,10 @@ class MoogoldOutputOfTheItems(BaseModel):
     genshin_user_id: str
     items: List[ListItems]
 
+
 class PurchaseMoogoldOutputOfTheItems(BaseModel):
     itemfs_id: str
+
 
 class OutputAllItemF(BaseModel):
     user_id: str

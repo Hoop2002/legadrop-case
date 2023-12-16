@@ -279,12 +279,15 @@ class ItemsFindings(Base):
     active = Column(Boolean, default=True)
     moogoald_order_id = Column(String)
     total = Column(DECIMAL)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
 
 class OrderMoogold(Base):
     __tablename__ = "order_moogold"
     id = Column(Integer, primary_key=True, autoincrement=True)
     itemfs_id = Column(String, ForeignKey("items_findings.itemfs_id"))
     order_id = Column(String)
+
 
 # from sqlalchemy import Table, ForeignKey, Column, Integer, String, Boolean, DateTime, DECIMAL
 # from sqlalchemy.orm import relationship
