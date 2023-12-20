@@ -12,7 +12,7 @@ router = APIRouter()
 
 
 @router.post("/api/v1/output/create")
-async def create_outputs(data: OutputAl lItemF):
+async def create_outputs(data: OutputAllItemF):
     outputs = await create_output_(outputs=data.model_dump())
     return outputs
 
