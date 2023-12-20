@@ -3,10 +3,17 @@ from database import get_session
 from models.models import ItemsFindings, Item, User
 
 
-async def get_outputs():
+async def get_outputs(page_size, page):
     async with get_session() as session:
-        stmt = await session.execute(select(ItemsFindings))
-        outputs = stmt.scalars().all()
+
+        if page_size and page:
+            stmt = select(ItemsFindings).limit(page_size).offset(page * page_size)
+        else: 
+            stmt = select(ItemsFindings)
+        
+        itemf_ = await session.execute(stmt)
+        outputs = itemf_.scalars().all()
+        
 
         result = []
 

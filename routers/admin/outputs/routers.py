@@ -18,8 +18,9 @@ async def create_outputs(data: OutputAllItemF):
 
 
 @router.get("/api/v1/output")
-async def gets_outputs():
-    output = await get_outputs()
+@router.get("/api/v1/output/page_size={page_size}&page={page}")
+async def gets_outputs(page_size: int = None, page: int = None):
+    output = await get_outputs(page_size=page_size, page=page)
     return output
 
 
