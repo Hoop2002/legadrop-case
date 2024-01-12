@@ -5,11 +5,12 @@ from models import Role, Permission
 
 
 async def create_permission(permission: str) -> Permission:
-    async with get_session() as session:        
+    async with get_session() as session:
         permission = Permission(name=permission)
         session.add(permission)
         await session.commit()
         return permission
+
 
 async def create_role(role: str) -> Role:
     async with get_session() as session:
@@ -26,7 +27,7 @@ roles = [
     "Администратор поддержки",
     "Финансовый администратор",
     "Контент-менеджер",
-    "SMM менеджер"
+    "SMM менеджер",
 ]
 
 permissions = [
@@ -96,7 +97,7 @@ permissions = [
     "Создание реферальных кодов",
     "Просмотр реферальных кодов",
     "Редактирование реферальных кодов",
-    "Удаление реферальных кодов"
+    "Удаление реферальных кодов",
 ]
 
 
@@ -121,14 +122,17 @@ async def create_all_roles():
     tasks = [create_role(role) for role in roles]
     await asyncio.gather(*tasks)
 
+
 async def create_all_permissions():
     tasks = [create_permission(permission_name) for permission_name in permissions]
     await asyncio.gather(*tasks)
+
 
 async def main():
     await init_database()
     # await create_all_permissions()
     # await create_all_roles()
+
 
 if __name__ == "__main__":
     asyncio.run(main())

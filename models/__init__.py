@@ -91,7 +91,7 @@ from .request_models import (
     RequestUpdateMeEmail,
     RequestUpdateMeLocale,
     RequestChangePassword,
-    RequestDeleteMe
+    RequestDeleteMe,
 )
 
 

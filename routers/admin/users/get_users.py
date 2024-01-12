@@ -3,6 +3,7 @@ from .functions import get_users
 
 router = APIRouter()
 
+
 @router.get("/users")
 async def get_users_():
-	return await get_users()
+    return await get_users()

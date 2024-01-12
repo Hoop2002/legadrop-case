@@ -9,16 +9,15 @@ router = APIRouter()
 
 
 @router.delete("/user/me/username")
-async def update_me_username_(
-    data: RequestDeleteMe, user_id=Depends(verify_user)
-):
+async def update_me_username_(data: RequestDeleteMe, user_id=Depends(verify_user)):
     user_data = await get_me(user_id)
     if not user_data:
         return HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Перезагрузите страницу!"
         )
 
-    if await verify_password(hashed_password=str(user_data.password_hash), password=data.password):
+    if await verify_password(
+        hashed_password=str(user_data.password_hash), password=data.password
+    ):
         await delete_me(user_id=user_id)
     return "Ok"
-

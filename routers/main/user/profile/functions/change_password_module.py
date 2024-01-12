@@ -12,6 +12,7 @@ async def update_me(user_id: str, updated_data: dict):
         )
         await session.commit()
 
+
 async def update_password(user_id: str, password: str):
     """Обновление пароля пользователя."""
     hashed_password = await hash_password(password)

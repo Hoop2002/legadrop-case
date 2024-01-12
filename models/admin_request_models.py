@@ -85,7 +85,6 @@ class RequestCaseItemDelete(BaseModel):
     item_id: str
 
 
-
 class Request(BaseModel):
     data: Dict[str, Any]
 
@@ -163,4 +162,3 @@ class RequestUserCreate(BaseModel):
     password: str
     image: str = "https://www.legdarop.org/image/user.jpg"
     locale: Optional[str] = "ru"
-

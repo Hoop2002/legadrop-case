@@ -2,7 +2,9 @@ from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from starlette.middleware.cors import CORSMiddleware
 from uvicorn import run
+from dotenv import load_dotenv
 
+load_dotenv()
 
 from routers.admin.auth import admin_sign_in, admin_me
 
@@ -43,7 +45,7 @@ from routers.admin.cases import (
     get_cases,
     get_case,
     delete_case,
-    update_case
+    update_case,
 )
 from routers.admin.items import (
     create_item,
@@ -81,6 +83,10 @@ from routers.spec import password_generator
 
 from routers.main.case import opening_case
 
+from routers.integration.moogold import moogold_api
+
+from routers.admin.outputs import output_api
+
 app = FastAPI(
     title="Legadrop administration API",
     description="API для администрирования Legasdrop",
@@ -106,7 +112,9 @@ app.mount("/images/user/", StaticFiles(directory="images/users"), name="images")
 app.mount("/images/case/", StaticFiles(directory="images/cases"), name="images")
 app.mount("/images/items/", StaticFiles(directory="images/items"), name="images")
 
-app.include_router(opening_case, tags=["randomaizer/opening_case"], prefix="/randomaizer")
+app.include_router(
+    opening_case, tags=["randomaizer/opening_case"], prefix="/randomaizer"
+)
 
 app.include_router(admin_sign_in, tags=["admin"], prefix="/admin")
 app.include_router(admin_me, tags=["admin"], prefix="/admin")
@@ -172,7 +180,9 @@ app.include_router(change_password, tags=["main"])
 
 app.include_router(password_generator, tags=["spec"], prefix="/admin/spec")
 
+app.include_router(moogold_api, tags=["moogold/api"])
 
+app.include_router(output_api, tags=["output/users/api"])
 
 from sqladmin import Admin
 from database.database import engine
@@ -191,6 +201,8 @@ from models.admins_models import (
     ExpenditureAdmin,
     UserTokenAdmin,
     AdminPanelUserAdmin,
+    AdminItemsFindings,
+    AdminItemsFindingsStatus,
 )
 
 from admin_back_auth import AdminAuth
@@ -212,6 +224,8 @@ admin.add_view(DepositAdmin)
 admin.add_view(ExpenditureAdmin)
 admin.add_view(UserTokenAdmin)
 admin.add_view(AdminPanelUserAdmin)
+admin.add_view(AdminItemsFindings)
+admin.add_view(AdminItemsFindingsStatus)
 
 
 if __name__ == "__main__":

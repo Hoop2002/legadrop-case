@@ -3,6 +3,7 @@ from sqlalchemy.future import select
 from database import get_session
 from models import Role, ResponseRole
 
+
 async def get_role(role_id: str) -> ResponseRole:
     async with get_session() as session:
         role_data = await session.execute(select(Role).where(Role.role_id == role_id))
@@ -13,6 +14,7 @@ async def get_role(role_id: str) -> ResponseRole:
                 detail=f"Роль с ID {role_id} не найдена.",
             )
         return role
+
 
 async def get_role_by_name(role_name: str) -> ResponseRole:
     async with get_session() as session:

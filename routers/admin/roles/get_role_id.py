@@ -5,6 +5,7 @@ from models import ResponseRole, RequestRoleID
 
 router = APIRouter()
 
+
 @router.get("/role-id", response_model=ResponseRole)
 async def get_role_id_(data: RequestRoleID):
     role = data.role

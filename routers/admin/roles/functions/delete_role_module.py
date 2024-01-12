@@ -9,7 +9,9 @@ async def delete_role(role_id: str) -> None:
         role_data = await session.execute(select(Role).where(Role.role_id == role_id))
         role = role_data.scalar_one_or_none()
         if role is None:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Роль не найдена")
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND, detail="Роль не найдена"
+            )
         await session.delete(role)
 
 
@@ -18,5 +20,7 @@ async def delete_role_by_name(role_name: str) -> None:
         role_data = await session.execute(select(Role).where(Role.name == role_name))
         role = role_data.scalar_one_or_none()
         if role is None:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Роль не найдена")
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND, detail="Роль не найдена"
+            )
         await session.delete(role)

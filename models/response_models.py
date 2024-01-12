@@ -36,12 +36,10 @@ class ResponseItem(BaseModel):
     compound: list
     cost_in_rubles: str
     step_down_factor: float
-    
+
 
 class ResponseItems(BaseModel):
     items: List[ResponseItem]
-
-
 
 
 class ResponseError(BaseModel):
@@ -101,6 +99,7 @@ class ResponceAssignPermission(BaseModel):
 class ResponseAdministrators(BaseModel):
     employees: List[str] = ["admin", "user"]
 
+
 class ResponseAdministrator(BaseModel):
     admin_id: str
     username: str
@@ -108,7 +107,7 @@ class ResponseAdministrator(BaseModel):
     last_name: str
     email: EmailStr
     image: str
-    
+
 
 class ReponseAdminDelete(BaseModel):
     deteil: str = "Сотрудник успешно удален"

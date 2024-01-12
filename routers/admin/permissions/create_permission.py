@@ -4,6 +4,7 @@ from models import RequestPermissionCreate, ResponsePermission
 
 router = APIRouter()
 
+
 @router.post("/permission", response_model=ResponsePermission)
 async def create_permission_(data: RequestPermissionCreate):
     permission = data.permission

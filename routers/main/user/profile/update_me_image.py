@@ -8,9 +8,7 @@ router = APIRouter()
 
 
 @router.put("/user/me/image")
-async def update_me_image_(
-    image: UploadFile = File(...), user_id=Depends(verify_user)
-):
+async def update_me_image_(image: UploadFile = File(...), user_id=Depends(verify_user)):
     path = await update_user_image(image_name=user_id, upload_image=image)
     user_data = await update_me_image(user_id=user_id, path=str(path))
     return user_data
