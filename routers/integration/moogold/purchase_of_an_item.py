@@ -94,11 +94,9 @@ async def purchase(data: MoogoldOutputOfTheItem):
                         headers=headers,
                     ) as response:
                         body = await response.text()
-                        
+
                         return {
-                            "Body": json.loads(
-                                body
-                            ),
+                            "Body": json.loads(body),
                             "Status": response.status,
                             "Content-type": response.headers["content-type"],
                         }
@@ -141,9 +139,7 @@ async def moogold_balance():
             ) as response:
                 body = await response.text()
                 return {
-                    "Body": json.loads(
-                        body
-                    ),
+                    "Body": json.loads(body),
                     "Status": response.status,
                     "Content-type": response.headers["content-type"],
                 }
@@ -211,15 +207,15 @@ async def purchase_items(data: PurchaseMoogoldOutputOfTheItems):
                         body_json = json.loads(body)
                         print(body_json)
                         await write_order_id_in_itemfs(
-                                itemfs_id=data_dict.get("itemfs_id"),
-                                order_id=str(body_json.get("order_id"))
-                            )
-                        
+                            itemfs_id=data_dict.get("itemfs_id"),
+                            order_id=str(body_json.get("order_id")),
+                        )
+
                         response_data["data"].append(
                             {
                                 "Body": body_json,
                                 "Status": response.status,
-                                "Content-type": response.headers["content-type"]
+                                "Content-type": response.headers["content-type"],
                             }
                         )
                     except Exception as err:
@@ -276,4 +272,3 @@ async def get_order(moogoald_order_id: str):
 async def get_orders_itemfs_list(itemfs_id: str):
     result = await get_orders_list(itemfs_id=itemfs_id)
     return result
-

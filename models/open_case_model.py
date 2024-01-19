@@ -7,10 +7,8 @@ class OpenCaseData(BaseModel):
     rarity_id: str
 
 
-class User__data(BaseModel):
-    uid: str
+
 
 
 class ItemList(BaseModel):
-    user: User__data
     items: List[OpenCaseData]

@@ -9,14 +9,16 @@ from dotenv import load_dotenv
 # Импорт модулей приложения
 from models import TokenData, RequestAdminID, UserID
 
+import os
 
 # Загрузка переменных окружения
 load_dotenv()
 
-ADMINSECRET = "wN44DLwPF7awwQF6ffWGNp1Zh2FFV9UP7iXpJh8osS86QzOq4zwnTV6Pu7CdjALGn9pgoMLXTEND3rkWhyR0uf6geVHb8AExl3"
-USERSECRTE = "OnceCupful8HLEbI77R7bV8uQfNOfOQ3mOK5crop6fFANS8getxUTf9aAJ3jAdFmDeUu-vpSJFlexU7RxNUnaFDKg3RNoDDAjNpWX"
+
+ADMINSECRET = os.getenv("ADMINSECRET")
+USERSECRET = os.getenv("ADMINSECRET")
 ALGORITHM = "HS256"
-TOKEN_EXP = 3600.0
+TOKEN_EXP = 7200.0
 KID = "1"
 
 admin_oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/admin/sign-in")
@@ -64,7 +66,7 @@ async def create_user_token(user_id: str) -> str:
     }
     headers = {"kid": KID}
     try:
-        token = jwt.encode(payload, USERSECRTE, algorithm=ALGORITHM, headers=headers)
+        token = jwt.encode(payload, USERSECRET, algorithm=ALGORITHM, headers=headers)
         return token
     except JWTError:
         raise HTTPException(
@@ -74,7 +76,7 @@ async def create_user_token(user_id: str) -> str:
 
 async def verify_user(token: str = Depends(user_oauth2_scheme)) -> str:
     try:
-        payload = jwt.decode(token, key=USERSECRTE, algorithms=[ALGORITHM])
+        payload = jwt.decode(token, key=USERSECRET, algorithms=[ALGORITHM])
         token_data = TokenData(**payload)
         return token_data.sub
     except ExpiredSignatureError:

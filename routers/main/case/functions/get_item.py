@@ -33,7 +33,7 @@ async def get_item(items, uid, group_id):
 
             if not coef:
                 return HTTPException(
-                    status_code=404,
+                    status_code=400,
                     detail="Внутренняя ошибка сервера обратитесь к Технической поддержке",
                 )
 
