@@ -14,7 +14,11 @@ load_dotenv()
 # access to the values within the .ini file in use.
 config = context.config
 section = config.config_ini_section
-config.set_section_option(section, "DB_URL", os.getenv("DATABASE_URL_PS", "postgresql+psycopg2://postgres@localhost/legadrop"))
+config.set_section_option(
+    section,
+    "DB_URL",
+    os.getenv("DATABASE_URL_PS", "postgresql+psycopg2://postgres@localhost/legadrop"),
+)
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.
 if config.config_file_name is not None:

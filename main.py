@@ -74,6 +74,7 @@ from routers.main.user.profile import (
     update_me_image,
     change_password,
 )
+from routers.main.user.items import get_user_items
 
 from routers.admin.group_category import rarity_group
 
@@ -177,6 +178,7 @@ app.include_router(update_me_email, tags=["main"])
 app.include_router(update_me_locale, tags=["main"])
 app.include_router(update_me_image, tags=["main"])
 app.include_router(change_password, tags=["main"])
+app.include_router(get_user_items, tags=["main"])
 
 app.include_router(password_generator, tags=["spec"], prefix="/admin/spec")
 
