@@ -1,12 +1,16 @@
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, HTTPException, status, Depends
 from models import RequestCategoryDelete
 from .functions import get_category, delete_category
+from security import verify_admin
+
 
 router = APIRouter()
 
 
 @router.delete("/category")
-async def delete_category_(data: RequestCategoryDelete):
+async def delete_category_(
+    data: RequestCategoryDelete, admin: str = Depends(verify_admin)
+):
     category = await get_category(category_id=data.category_id)
     if not category:
         raise HTTPException(

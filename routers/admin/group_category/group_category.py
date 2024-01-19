@@ -1,16 +1,17 @@
 from ssl import DER_cert_to_PEM_cert
 from unicodedata import category
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, HTTPException, status, Depends
 from sqlalchemy import select
 from typing import Optional
 from database import get_session
 from models import RarityCategory, RarityCategoryUPD
+from security import verify_admin
 
 router = APIRouter()
 
 
 @router.get("/group_category")
-async def get_group_category():
+async def get_group_category(admin: str = Depends(verify_admin)):
     async with get_session() as session:
         rarity = await session.execute(select(RarityCategory))
         rarity_sc = rarity.scalars().all()

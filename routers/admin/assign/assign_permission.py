@@ -1,13 +1,15 @@
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, HTTPException, status, Depends
 from .functions import assign_permission
 from models import RequestAssignPermission
-
+from security import verify_admin
 
 router = APIRouter()
 
 
 @router.post("/assign/permission")
-async def assign_permission_(request: RequestAssignPermission):
+async def assign_permission_(
+    request: RequestAssignPermission, admin: str = Depends(verify_admin)
+):
     try:
         await assign_permission(request.role_name, request.permissions_names)
         return HTTPException(

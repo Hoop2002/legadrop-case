@@ -23,7 +23,9 @@ ROLE_MANAGEMENT_PERMISSION = "Создание сотрудников"
 
 
 @router.delete("/employee", response_model=ReponseAdminDelete)
-async def delete_employee_(data: RequestAdminDelete):
+async def delete_employee_(
+    data: RequestAdminDelete, admin: str = Depends(verify_admin)
+):
     deleted_employee = await delete_employee(data.admin_id)
     if deleted_employee:
         return HTTPException(
