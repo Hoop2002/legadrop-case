@@ -1,10 +1,13 @@
+import os
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 from models import Item, ItemCompound, RarityCategory
-import requests
 import json
+from dotenv import load_dotenv
 
-URL = "postgresql+psycopg2://lega_drop:hoophoop2002@localhost:5432/lega_drop_db"
+load_dotenv()
+
+URL = os.getenv("DATABASE_URL_PS", "postgresql+psycopg2://postgres@localhost/legadrop")
 
 engine = create_engine(URL, echo=True)
 

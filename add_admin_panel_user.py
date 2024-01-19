@@ -1,8 +1,12 @@
-from enum import auto
+import os
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 
-URL = "postgresql+psycopg2://lega_drop:hoophoop2002@localhost:5432/lega_drop_db"
+from dotenv import load_dotenv
+
+load_dotenv()
+
+URL = os.getenv("DATABASE_URL_PS", "postgresql+psycopg2://postgres@localhost/legadrop")
 
 engine = create_engine(URL, echo=True)
 
