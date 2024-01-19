@@ -1,12 +1,15 @@
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, HTTPException, status, Depends
 from .functions import delete_case_item, _delete_case_items
 from models import RequestCaseItemDelete
+from security import verify_admin
 
 router = APIRouter()
 
 
 @router.delete("/case/item")
-async def delete_case_item_(data: RequestCaseItemDelete):
+async def delete_case_item_(
+    data: RequestCaseItemDelete, admin: str = Depends(verify_admin)
+):
     case, item = await delete_case_item(case_id=data.case_id, item_id=data.item_id)
 
     return {
@@ -16,7 +19,7 @@ async def delete_case_item_(data: RequestCaseItemDelete):
 
 
 @router.delete("/case/item/delete")
-async def delete_case_items(data: dict):
+async def delete_case_items(data: dict, admin: str = Depends(verify_admin)):
     if not data.get("case_id", False):
         return HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail="key 'case_id' not found"

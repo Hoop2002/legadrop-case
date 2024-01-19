@@ -27,7 +27,7 @@ ROLE_MANAGEMENT_PERMISSION = "Создание сотрудников"
 
 
 @router.post("/employee", response_model=AdminData)
-async def create_employee_(data: RequstAdminCreate):
+async def create_employee_(data: RequstAdminCreate, admin: str = Depends(verify_admin)):
     exist_employee = await get_by_email(data.email)
     if exist_employee:
         raise HTTPException(

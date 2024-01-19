@@ -1,6 +1,7 @@
-from fastapi import APIRouter, HTTPException, status, UploadFile, Form, File
+from fastapi import APIRouter, HTTPException, status, UploadFile, Form, File, Depends
 from pathlib import Path
 from .functions import create_case, get_case_by_name
+from security import verify_admin
 
 router = APIRouter()
 
@@ -9,7 +10,10 @@ IMAGES_PATH = "images/cases"
 
 @router.post("/case")
 async def create_case_(
-    name: str = Form(...), category_id: str = Form(...), image: UploadFile = File(...)
+    name: str = Form(...),
+    category_id: str = Form(...),
+    image: UploadFile = File(...),
+    admin: str = Depends(verify_admin),
 ):
     case = await get_case_by_name(name)
     if case:

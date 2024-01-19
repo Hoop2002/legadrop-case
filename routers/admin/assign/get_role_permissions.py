@@ -1,12 +1,12 @@
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, HTTPException, status, Depends
 from .functions import get_role_permissions
-
+from security import verify_admin
 
 router = APIRouter()
 
 
 @router.get("/role/permissions/")
-async def get_role_permissions_(role_name: str):
+async def get_role_permissions_(role_name: str, admin: str = Depends(verify_admin)):
     try:
         permissions = await get_role_permissions(role_name)
         return {

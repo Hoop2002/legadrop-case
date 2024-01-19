@@ -1,12 +1,15 @@
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, HTTPException, status, Depends
 from models import RequestCreateCategory, ResponceCategory
 from .functions import create_category, get_category_by_name
+from security import verify_admin
 
 router = APIRouter()
 
 
 @router.post("/category")
-async def create_category_(data: RequestCreateCategory):
+async def create_category_(
+    data: RequestCreateCategory, admin: str = Depends(verify_admin)
+):
     category = await get_category_by_name(data.name)
     if category:
         raise HTTPException(

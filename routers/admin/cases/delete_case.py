@@ -1,12 +1,13 @@
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, HTTPException, status, Depends
 from .functions import delete_case
 from models import RequestCase
+from security import verify_admin
 
 router = APIRouter()
 
 
 @router.delete("/case")
-async def get_case_(data: RequestCase):
+async def get_case_(data: RequestCase, admin: str = Depends(verify_admin)):
     case_data = await delete_case(case_id=data.case_id)
     if not case_data:
         raise HTTPException(

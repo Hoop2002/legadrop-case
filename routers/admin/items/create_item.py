@@ -1,8 +1,9 @@
-from fastapi import APIRouter, HTTPException, status, UploadFile, Form, File
+from fastapi import APIRouter, HTTPException, status, UploadFile, Form, File, Depends
 from models import RequestCreateItem, RequestItem, ResponseItem
 from .functions import create_item, get_item_by_name, get_item
 from models import Item
 from pathlib import Path
+from security import verify_admin
 
 IMAGES_PATH = "images/items"
 
@@ -16,6 +17,7 @@ async def create_item_(
     gem_cost: int = Form(...),
     color: str = Form(...),
     image: UploadFile = File(...),
+    admin: str = Depends(verify_admin),
 ):
     item = await get_item_by_name(name)
     if item:
