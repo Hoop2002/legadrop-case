@@ -2,6 +2,7 @@ from ast import Str
 from datetime import datetime
 from email.policy import default
 from tokenize import Comment
+from typing import List
 from sqlalchemy import (
     Boolean,
     Column,
@@ -12,7 +13,7 @@ from sqlalchemy import (
     String,
     Table,
 )
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, Mapped, mapped_column
 
 from database import Base
 from utils import generator_id
@@ -154,10 +155,10 @@ class RarityCategory(Base):
     __tablename__ = "rarity_category"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    name = Column(String)
+    name = Column(String, nullable=False)
     category_id = Column(String, unique=True, default=generator_id)
-    category_percent = Column(DECIMAL)  # групповой процент
-    item = relationship("Item", back_populates="rarity_category")
+    category_percent = Column(DECIMAL, nullable=False)  # групповой процент
+    item: Mapped[List["Item"]] = relationship("Item", back_populates="rarity_category")
     ext_id = Column(String, unique=True)
 
 
@@ -177,8 +178,10 @@ class Item(Base):
         DECIMAL, default=1.0
     )  # если коофициент ниже 1.0 то кооф будет понижать
 
-    rarity_id = Column(String, ForeignKey("rarity_category.ext_id"))
-    rarity_category = relationship("RarityCategory", back_populates="item")
+    rarity_id: Mapped[str] = mapped_column(ForeignKey("rarity_category.ext_id"))
+    rarity_category: Mapped["RarityCategory"] = relationship(
+        "RarityCategory", back_populates="item"
+    )
 
     compound = relationship("ItemCompound", back_populates="item")
     cases = relationship("Case", secondary=case_items, back_populates="items")

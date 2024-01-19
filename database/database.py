@@ -6,7 +6,9 @@ import os
 
 load_dotenv()
 
-DATABASE_URL = os.getenv("DATABASE_URL", "postgresql+asyncpg://postgres@localhost/legadrop")
+DATABASE_URL = os.getenv(
+    "DATABASE_URL", "postgresql+asyncpg://postgres@localhost/legadrop"
+)
 
 
 engine = create_async_engine(DATABASE_URL, echo=False, future=True)

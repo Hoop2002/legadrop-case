@@ -5,15 +5,13 @@ from models.models import ItemsFindings, Item, User
 
 async def get_outputs(page_size, page):
     async with get_session() as session:
-
         if page_size and page:
             stmt = select(ItemsFindings).limit(page_size).offset(page * page_size)
-        else: 
+        else:
             stmt = select(ItemsFindings)
-        
+
         itemf_ = await session.execute(stmt)
         outputs = itemf_.scalars().all()
-        
 
         result = []
 
