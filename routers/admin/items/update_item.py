@@ -1,13 +1,16 @@
 import stat
-from fastapi import APIRouter, HTTPException, status, Request
+from fastapi import APIRouter, HTTPException, status, Request, Depends
 from models import RequestItemUpdate, ResponseItem
 from .functions import get_item, update_item
+from security import verify_admin
 
 router = APIRouter()
 
 
 @router.put("/item")
-async def update_item_(request: Request, data: dict):
+async def update_item_(
+    request: Request, data: dict, admin: str = Depends(verify_admin)
+):
     if not data.get("item_id", False):
         return HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,

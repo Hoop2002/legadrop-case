@@ -1,11 +1,12 @@
 from urllib import response
-from fastapi import HTTPException, APIRouter, status
+from fastapi import HTTPException, APIRouter, status, Depends
 from aiohttp import ClientSession
 from models.request_models import (
     MoogoldOutputOfTheItem,
     MoogoldOutputOfTheItems,
     PurchaseMoogoldOutputOfTheItems,
 )
+from security import verify_admin
 
 import time
 import hmac
@@ -34,7 +35,7 @@ router = APIRouter()
 
 
 @router.post("/api/v1/moogold/purchase/item")
-async def purchase(data: MoogoldOutputOfTheItem):
+async def purchase(data: MoogoldOutputOfTheItem, admin: str = Depends(verify_admin)):
     data_dict = data.model_dump()
 
     server_name = await get_server(user=data_dict.get("genshin_user_id", False))
@@ -108,7 +109,7 @@ async def purchase(data: MoogoldOutputOfTheItem):
 
 
 @router.get("/api/v1/moogold/balance")
-async def moogold_balance():
+async def moogold_balance(admin: str = Depends(verify_admin)):
     async with ClientSession() as session:
         try:
             data = {"path": "user/balance"}
@@ -150,7 +151,9 @@ async def moogold_balance():
 
 
 @router.post("/api/v1/moogold/purchase/outputs/item")
-async def purchase_items(data: PurchaseMoogoldOutputOfTheItems):
+async def purchase_items(
+    data: PurchaseMoogoldOutputOfTheItems, admin: str = Depends(verify_admin)
+):
     data_dict = data.model_dump()
     itemfs = await get_itemfs(data_dict.get("itemfs_id"))
     server_name = await get_server(user=itemfs.genshin_user_id)
@@ -227,7 +230,7 @@ async def purchase_items(data: PurchaseMoogoldOutputOfTheItems):
 
 
 @router.get("/api/v1/moogold/{moogoald_order_id}/order")
-async def get_order(moogoald_order_id: str):
+async def get_order(moogoald_order_id: str, admin: str = Depends(verify_admin)):
     async with ClientSession() as session:
         try:
             data = {"path": "order/order_detail", "order_id": moogoald_order_id}
@@ -269,6 +272,6 @@ async def get_order(moogoald_order_id: str):
 
 
 @router.get("/api/v1/moogold/{itemfs_id}/order/list")
-async def get_orders_itemfs_list(itemfs_id: str):
+async def get_orders_itemfs_list(itemfs_id: str, admin: str = Depends(verify_admin)):
     result = await get_orders_list(itemfs_id=itemfs_id)
     return result

@@ -11,9 +11,6 @@ router = APIRouter()
 
 @router.post("/case/opening")
 async def opening_case(items: ItemList, user_id: str = Depends(verify_user)):
-    
     items_group, group_ext = await get_items_by_groups(items=items.model_dump())
-    item = await get_item(
-        items=items_group, uid=user_id, group_id=group_ext
-    )
+    item = await get_item(items=items_group, uid=user_id, group_id=group_ext)
     return item[-1]

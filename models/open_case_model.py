@@ -7,8 +7,5 @@ class OpenCaseData(BaseModel):
     rarity_id: str
 
 
-
-
-
 class ItemList(BaseModel):
     items: List[OpenCaseData]
