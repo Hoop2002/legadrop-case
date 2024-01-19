@@ -15,14 +15,6 @@ def id_genrator():
     return first + second + third + remaining
 
 
-async def save_image(image_name: str, upload_image: UploadFile, path: str) -> Path:
-    image_path = Path(path) / f"{image_name}.jpg"
-    with image_path.open("wb") as buffer:
-        content = await upload_image.read()
-        buffer.write(content)
-    return image_path
-
-
 async def update_image(image_name: str, upload_image: UploadFile, path: str) -> Path:
     image_path = Path(path) / f"{image_name}.jpg"
     if image_path.exists():

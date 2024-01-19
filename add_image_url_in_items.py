@@ -1,10 +1,10 @@
-from pydantic_core import Url
+import os
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 from models import Item
 
 
-URL = "postgresql+psycopg2://lega_drop:hoophoop2002@localhost:5432/lega_drop_db"
+URL = os.getenv("DATABASE_URL_PS", "postgresql+psycopg2://postgres@localhost/legadrop")
 
 engine = create_engine(URL, echo=True)
 url_image = "images/items/crystal.png"
