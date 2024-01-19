@@ -89,9 +89,9 @@ from routers.integration.moogold import moogold_api
 from routers.admin.outputs import output_api
 
 app = FastAPI(
-    title="Legadrop administration API",
-    description="API для администрирования Legasdrop",
-    version="0.0.2",
+    title="Legadrop API",
+    description="API LEGADROP",
+    version="0.1.5",
 )
 
 # Добавление middleware для CORS
@@ -104,14 +104,8 @@ app.add_middleware(
 )
 
 
-@app.get("/")
-def root():
-    return {"Hello": "World"}
+app.mount("/images", StaticFiles(directory="images/"), name="images")
 
-
-app.mount("/images/user/", StaticFiles(directory="images/users"), name="images")
-app.mount("/images/case/", StaticFiles(directory="images/cases"), name="images")
-app.mount("/images/items/", StaticFiles(directory="images/items"), name="images")
 
 app.include_router(
     opening_case, tags=["randomaizer/opening_case"], prefix="/randomaizer"
