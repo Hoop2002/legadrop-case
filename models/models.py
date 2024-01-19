@@ -133,6 +133,7 @@ class Case(Base):
     image = Column(String)
     category_id = Column(String, ForeignKey("categories.category_id"))
     created_at = Column(DateTime, default=datetime.utcnow)
+
     category = relationship("Category", back_populates="cases")
     items = relationship("Item", secondary=case_items, back_populates="cases")
     user_opened = relationship(
@@ -167,10 +168,12 @@ class Item(Base):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     item_id = Column(String, unique=True, default=generator_id)
-    name = Column(String)
+    name = Column(String, nullable=False)
     cost = Column(DECIMAL)
     cost_in_rubles = Column(DECIMAL)
-    gem_cost = Column(Integer)
+    sale = Column(Boolean, default=True, nullable=False)  # предмет продаётся
+    # active = Column(Boolean, default=True)  # Предмет можно юзать в кейсе
+    gem_cost = Column(Integer)  # todo скорее всего стоит удалить
     color = Column(String)
     image = Column(String)
     created_at = Column(DateTime, default=datetime.utcnow)
