@@ -16,7 +16,7 @@ load_dotenv()
 
 
 ADMINSECRET = os.getenv("ADMINSECRET")
-USERSECRET = os.getenv("ADMINSECRET")
+USERSECRET = os.getenv("USERSECRET")
 ALGORITHM = "HS256"
 TOKEN_EXP = 7200.0
 KID = "1"

@@ -22,7 +22,7 @@ async def admin_sign_in(data: OAuth2PasswordRequestForm = Depends()):
         data.username
     )
 
-    if admin_data is None:
+    if not admin_data:
         raise HTTPException(
             detail="Неверное имя пользователя или почта",
             status_code=status.HTTP_400_BAD_REQUEST,
