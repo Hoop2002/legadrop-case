@@ -6,9 +6,14 @@ class RarityCategorySchema(BaseModel):
     name: str
 
 
-class UserItemSchema(BaseModel):
+class ItemRequestSchema(BaseModel):
     id: int
+
+
+class ItemSchema(ItemRequestSchema):
     name: str
+    cost: float | None
+    cost_in_rubles: float | None
     color: str | None
     image: str | None
     rarity_category: RarityCategorySchema
@@ -17,5 +22,5 @@ class UserItemSchema(BaseModel):
         from_attributes = True
 
 
-class UserItemsList(RootModel):
-    root: List[UserItemSchema]
+class ItemsListSchema(RootModel):
+    root: List[ItemSchema]

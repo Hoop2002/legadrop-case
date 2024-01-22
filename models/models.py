@@ -1,7 +1,4 @@
-from ast import Str
 from datetime import datetime
-from email.policy import default
-from tokenize import Comment
 from typing import List
 from sqlalchemy import (
     Boolean,
@@ -15,7 +12,7 @@ from sqlalchemy import (
 )
 from sqlalchemy.orm import relationship, Mapped, mapped_column
 
-from database import Base
+from database import Base, get_session
 from utils import generator_id
 
 
@@ -106,14 +103,6 @@ case_openings = Table(
     Column("opened_date", DateTime, default=datetime.utcnow),
 )
 
-user_inventory = Table(
-    "user_inventory",
-    Base.metadata,
-    Column("user_id", String, ForeignKey("users.user_id"), primary_key=True),
-    Column("item_id", String, ForeignKey("items.item_id"), primary_key=True),
-    Column("acquired_date", DateTime, default=datetime.utcnow),
-)
-
 
 class Category(Base):
     __tablename__ = "categories"
@@ -170,7 +159,7 @@ class Item(Base):
     item_id = Column(String, unique=True, default=generator_id)
     name = Column(String, nullable=False)
     cost = Column(DECIMAL)
-    cost_in_rubles = Column(DECIMAL)
+    cost_in_rubles = Column(DECIMAL, nullable=False, default=0)
     sale = Column(Boolean, default=True, nullable=False)  # предмет продаётся
     # active = Column(Boolean, default=True)  # Предмет можно юзать в кейсе
     gem_cost = Column(Integer)  # todo скорее всего стоит удалить
@@ -188,9 +177,7 @@ class Item(Base):
 
     compound = relationship("ItemCompound", back_populates="item")
     cases = relationship("Case", secondary=case_items, back_populates="items")
-    user_items = relationship(
-        "User", secondary=user_inventory, back_populates="inventory_items"
-    )
+    user_items: Mapped[List['UserItems']] = relationship("UserItems", back_populates="user_items")
 
 
 class Test(Base):
@@ -218,12 +205,31 @@ class User(Base):
     opened_cases = relationship(
         "Case", secondary=case_openings, back_populates="user_opened"
     )
-    inventory_items = relationship(
-        "Item", secondary=user_inventory, back_populates="user_items"
-    )
+    inventory_items: Mapped[List['UserItems']] = relationship("UserItems", back_populates="user")
     social_accounts = relationship("SocialAuth", back_populates="user")
     tokens = relationship("UserToken", back_populates="user")
     individual_percent = Column(DECIMAL, default=1.0)
+
+    async def update(self, data: dict):
+        async with get_session() as session:
+            for key in data.keys():
+                if not hasattr(self, key):
+                    raise AttributeError(f"Have no key {key}")
+                else:
+                    setattr(self, key, data[key])
+            await session.commit()
+
+
+class UserItems(Base):
+    __tablename__ = "users_items"
+    id: int = Column(Integer, primary_key=True, autoincrement=True)
+    count: int = Column(Integer, nullable=False, default=1)
+
+    user_id: Mapped[int] = mapped_column(ForeignKey('users.id'))
+    user: Mapped['User'] = relationship('User', back_populates='user_items')
+    item_id: Mapped[int] = mapped_column(ForeignKey('items.id'))
+    item: Mapped['Item'] = relationship('Item', back_populates='item')
+
 
 
 class SocialAuth(Base):

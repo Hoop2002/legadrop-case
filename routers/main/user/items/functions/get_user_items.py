@@ -2,7 +2,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import joinedload
 from typing import Sequence
 from database import get_session
-from models import Item, User, RarityCategory
+from models import Item, User
 
 
 async def get_items_by_user(user_id: str) -> Sequence[Item]:
