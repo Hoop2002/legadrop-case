@@ -9,6 +9,7 @@ from sqlalchemy import (
     Integer,
     String,
     Table,
+    select,
 )
 from sqlalchemy.orm import relationship, Mapped, mapped_column
 
@@ -228,12 +229,35 @@ class UserItems(Base):
     __tablename__ = "users_items"
 
     id: int = Column(Integer, primary_key=True, autoincrement=True)
-    count: int = Column(Integer, nullable=False, default=1)
 
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
     user: Mapped["User"] = relationship("User", back_populates="user_items")
     item_id: Mapped[int] = mapped_column(ForeignKey("items.id"))
     item: Mapped["Item"] = relationship("Item", back_populates="user_items")
+
+    @property
+    def count(self) -> int:
+        from database.database import SessionLocalSync
+        from sqlalchemy import func
+        try:
+            session = SessionLocalSync()
+            with session:
+                stmt = select(func.count(UserItems.id)).filter_by(user_id=self.user_id, item_id=self.item_id)
+                result = session.execute(stmt)
+                return result.scalar()
+        except Exception as err:
+            print(err)
+        finally:
+            session.close()
+
+    @classmethod
+    async def create(cls, **kwargs) -> "UserItems":
+        instance = cls(**kwargs)
+        async with get_session() as session:
+            session.add(instance)
+            await session.commit()
+            await session.refresh(instance)
+        return instance
 
 
 class SocialAuth(Base):

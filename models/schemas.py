@@ -5,6 +5,9 @@ from typing import List
 class RarityCategorySchema(BaseModel):
     name: str
 
+    class Config:
+        from_attributes = True
+
 
 class ItemRequestSchema(BaseModel):
     id: int

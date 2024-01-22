@@ -5,9 +5,9 @@ from database import get_session
 from models import Item
 
 
-async def get_items(filter_by: dict = None) -> Sequence[Item]:
+async def get_items(filter_by: dict = None, page_size: int = 20, page: int = 0) -> Sequence[Item]:
     async with get_session() as session:
-        stmt = select(Item).filter_by(**filter_by).options(joinedload(Item.rarity_category))
+        stmt = select(Item).filter_by(**filter_by).options(joinedload(Item.rarity_category)).limit(page_size).offset(page * page_size)
         result = await session.execute(stmt)
         items = result.scalars().all()
         return items
