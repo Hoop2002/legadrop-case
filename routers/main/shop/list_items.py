@@ -34,4 +34,7 @@ async def buy_item(item: ItemRequestSchema, user_id=Depends(verify_user)):
 
         return user_item
     else:
-        return JSONResponse(content={'message': 'Не хватает средств'}, status_code=status.HTTP_400_BAD_REQUEST)
+        return JSONResponse(
+            content={"message": "Не хватает средств"},
+            status_code=status.HTTP_400_BAD_REQUEST,
+        )

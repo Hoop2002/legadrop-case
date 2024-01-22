@@ -14,14 +14,18 @@ router = APIRouter()
 async def get_user_items(
     user_id=Depends(verify_user), page: int = 0, page_size: int = 20
 ):
-    items = await get_items_by_user(user_id, filter_by={'active': True}, page_size=page_size, page=page)
+    items = await get_items_by_user(
+        user_id, filter_by={"active": True}, page_size=page_size, page=page
+    )
     return items
 
 
 @router.post("/user/sale_item")
 async def sale_user_item(user_item_id: ItemRequestSchema, user_id=Depends(verify_user)):
     user = await get_user(user_id)
-    item = await get_items_by_user(user_id, filter_by=dict(id=user_item_id.id, active=True))
+    item = await get_items_by_user(
+        user_id, filter_by=dict(id=user_item_id.id, active=True)
+    )
     item = item[0]
     if not item:
         return JSONResponse(
