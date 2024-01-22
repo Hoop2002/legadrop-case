@@ -24,3 +24,16 @@ class ItemSchema(ItemRequestSchema):
 
 class ItemsListSchema(RootModel):
     root: List[ItemSchema]
+
+
+class UserItemsSchema(BaseModel):
+    id: int
+    count: int
+    item: ItemSchema
+
+    class Config:
+        from_attributes = True
+
+
+class UserItemsListSchema(RootModel):
+    root: List[UserItemsSchema]
