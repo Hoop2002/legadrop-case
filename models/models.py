@@ -234,6 +234,7 @@ class UserItems(Base):
     __tablename__ = "user_items"
 
     id: int = Column(Integer, primary_key=True, autoincrement=True)
+    active: bool = Column(Boolean, default=True, nullable=False)
 
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
     user: Mapped["User"] = relationship("User", back_populates="user_items")
@@ -255,6 +256,20 @@ class UserItems(Base):
     #         print(err)
     #     finally:
     #         session.close()
+
+    async def update(self, data: dict):
+        async with get_session() as session:
+            stmt = select(UserItems).filter_by(id=self.id)
+            instance = await session.execute(stmt)
+            instance = instance.scalar()
+            for key in data.keys():
+                if not hasattr(instance, key):
+                    raise AttributeError(f"Have no key {key}")
+                else:
+                    setattr(instance, key, data[key])
+            await session.commit()
+            session.refresh(instance)
+            return instance
 
     @classmethod
     async def create(cls, **kwargs) -> "UserItems":
