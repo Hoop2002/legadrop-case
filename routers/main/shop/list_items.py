@@ -12,7 +12,7 @@ router = APIRouter()
 
 @router.get("/shop/items", response_model=ItemsListSchema)
 async def get_user_items(offset: int = 0, limit: int = 20):
-    items = await get_items()
+    items = await get_items({"sale": True})
     return items[offset : offset + limit]
 
 
