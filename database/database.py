@@ -43,14 +43,15 @@ engine_sync = create_engine(DB_SYNC)
 SessionLocalSync = sessionmaker(autocommit=False, autoflush=False, bind=engine_sync)
 
 
-def get_sync_session():
-    session = SessionLocalSync()
-    session.begin()
-    try:
-        yield session
-    except Exception as e:
-        print(e)
-        session.rollback()
-        raise e
-    finally:
-        session.close()
+# todo не работает, разобраться
+# def get_sync_session():
+#     session = SessionLocalSync()
+#     session.begin()
+#     try:
+#         yield session
+#     except Exception as e:
+#         print(e)
+#         session.rollback()
+#         raise e
+#     finally:
+#         session.close()
