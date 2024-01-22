@@ -177,7 +177,9 @@ class Item(Base):
 
     compound = relationship("ItemCompound", back_populates="item")
     cases = relationship("Case", secondary=case_items, back_populates="items")
-    user_items: Mapped[List['UserItems']] = relationship("UserItems", back_populates="user_items")
+    user_items: Mapped[List["UserItems"]] = relationship(
+        "UserItems", back_populates="user_items"
+    )
 
 
 class Test(Base):
@@ -205,7 +207,9 @@ class User(Base):
     opened_cases = relationship(
         "Case", secondary=case_openings, back_populates="user_opened"
     )
-    inventory_items: Mapped[List['UserItems']] = relationship("UserItems", back_populates="user")
+    inventory_items: Mapped[List["UserItems"]] = relationship(
+        "UserItems", back_populates="user"
+    )
     social_accounts = relationship("SocialAuth", back_populates="user")
     tokens = relationship("UserToken", back_populates="user")
     individual_percent = Column(DECIMAL, default=1.0)
@@ -225,11 +229,10 @@ class UserItems(Base):
     id: int = Column(Integer, primary_key=True, autoincrement=True)
     count: int = Column(Integer, nullable=False, default=1)
 
-    user_id: Mapped[int] = mapped_column(ForeignKey('users.id'))
-    user: Mapped['User'] = relationship('User', back_populates='user_items')
-    item_id: Mapped[int] = mapped_column(ForeignKey('items.id'))
-    item: Mapped['Item'] = relationship('Item', back_populates='item')
-
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
+    user: Mapped["User"] = relationship("User", back_populates="user_items")
+    item_id: Mapped[int] = mapped_column(ForeignKey("items.id"))
+    item: Mapped["Item"] = relationship("Item", back_populates="item")
 
 
 class SocialAuth(Base):
