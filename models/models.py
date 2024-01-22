@@ -217,16 +217,21 @@ class User(Base):
 
     async def update(self, data: dict):
         async with get_session() as session:
+            stmt = select(User).filter_by(id=self.id)
+            user = await session.execute(stmt)
+            user = user.scalar()
             for key in data.keys():
-                if not hasattr(self, key):
+                if not hasattr(user, key):
                     raise AttributeError(f"Have no key {key}")
                 else:
-                    setattr(self, key, data[key])
+                    setattr(user, key, data[key])
             await session.commit()
+            session.refresh(user)
+            return user
 
 
 class UserItems(Base):
-    __tablename__ = "users_items"
+    __tablename__ = "user_items"
 
     id: int = Column(Integer, primary_key=True, autoincrement=True)
 
@@ -235,20 +240,21 @@ class UserItems(Base):
     item_id: Mapped[int] = mapped_column(ForeignKey("items.id"))
     item: Mapped["Item"] = relationship("Item", back_populates="user_items")
 
-    @property
-    def count(self) -> int:
-        from database.database import SessionLocalSync
-        from sqlalchemy import func
-        try:
-            session = SessionLocalSync()
-            with session:
-                stmt = select(func.count(UserItems.id)).filter_by(user_id=self.user_id, item_id=self.item_id)
-                result = session.execute(stmt)
-                return result.scalar()
-        except Exception as err:
-            print(err)
-        finally:
-            session.close()
+    # todo решить надо ли это
+    # @property
+    # def count(self) -> int:
+    #     from database.database import SessionLocalSync
+    #     from sqlalchemy import func
+    #     try:
+    #         session = SessionLocalSync()
+    #         with session:
+    #             stmt = select(func.count(UserItems.id)).filter_by(user_id=self.user_id, item_id=self.item_id)
+    #             result = session.execute(stmt)
+    #             return result.scalar()
+    #     except Exception as err:
+    #         print(err)
+    #     finally:
+    #         session.close()
 
     @classmethod
     async def create(cls, **kwargs) -> "UserItems":

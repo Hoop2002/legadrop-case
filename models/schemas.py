@@ -31,7 +31,7 @@ class ItemsListSchema(RootModel):
 
 class UserItemsSchema(BaseModel):
     id: int
-    count: int
+    # count: int
     item: ItemSchema
 
     class Config:
