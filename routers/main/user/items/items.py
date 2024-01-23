@@ -4,7 +4,7 @@ from security.token_functions import verify_user
 from .functions import get_items_by_user
 from routers.functions import get_user
 
-from models.schemas import UserItemsListSchema, ItemRequestSchema
+from models.item_schemas import UserItemsListSchema, ItemRequestSchema
 
 
 router = APIRouter()

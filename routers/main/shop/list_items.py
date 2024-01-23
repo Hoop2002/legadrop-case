@@ -4,7 +4,7 @@ from security.token_functions import verify_user
 from .functions import get_items, get_item_by_id
 from routers.functions import get_user
 
-from models.schemas import ItemsListSchema, ItemRequestSchema
+from models.item_schemas import ItemsListSchema, ItemRequestSchema
 from models import UserItems
 
 
