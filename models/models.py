@@ -12,7 +12,7 @@ from sqlalchemy import (
     select,
 )
 from sqlalchemy.dialects.postgresql import ENUM as PgEnum
-from sqlalchemy.orm import relationship, Mapped, mapped_column, validates
+from sqlalchemy.orm import relationship, Mapped, mapped_column, validates, joinedload
 
 from database import Base, get_session
 from utils import generator_id
@@ -192,6 +192,15 @@ class Test(Base):
     test = Column(String)
 
 
+used_promo = Table(
+    "used_promo",
+    Base.metadata,
+    Column("user_id", Integer, ForeignKey("users.id"), primary_key=True),
+    Column("promo_id", Integer, ForeignKey("promo_codes.id"), primary_key=True),
+    Column("used_date", DateTime, default=datetime.utcnow, nullable=False),
+)
+
+
 class User(Base):
     __tablename__ = "users"
 
@@ -217,6 +226,9 @@ class User(Base):
     social_accounts = relationship("SocialAuth", back_populates="user")
     tokens = relationship("UserToken", back_populates="user")
     calcs: Mapped[List["Calc"]] = relationship(back_populates="user")
+    promo_codes: Mapped[List["PromoCode"]] = relationship(
+        secondary=used_promo, back_populates="users"
+    )
 
     async def update(self, data: dict):
         async with get_session() as session:
@@ -365,15 +377,42 @@ class PromoCode(Base):
     limit_activations: int = Column(Integer)
     to_date: datetime = Column(DateTime)
 
-    activations: int = Column(Integer)
+    activations: int = Column(Integer, default=0, nullable=False)
     active: bool = Column(Boolean, default=True)
     creation_date: datetime = Column(DateTime, default=datetime.utcnow())
     code_data: str = Column(String, unique=True, nullable=False, default=generator_id)
 
     calc: Mapped[List["Calc"]] = relationship(back_populates="promo_code")
+    users: Mapped[List["User"]] = relationship(
+        secondary=used_promo, back_populates="promo_codes"
+    )
 
-    async def activate_pomo(self):
-        pass
+    async def activate_pomo(self, user_id):
+        async with get_session() as session:
+            stmt = select(User).where(User.user_id == user_id)
+            result = await session.execute(stmt)
+            user = result.scalar()
+            stmt = (
+                select(PromoCode)
+                .filter_by(id=self.id)
+                .options(joinedload(PromoCode.users))
+            )
+            result = await session.execute(stmt)
+            instance: PromoCode = result.scalar()
+
+            if self.type_code == "balance":
+                calc = Calc(user=user, promo_code=instance, summ=instance.summ)
+                session.add(calc)
+                user.balance = user.balance + self.summ
+
+            instance.users.append(user)
+            instance.activations += 1
+            if instance.limit_activations and (
+                instance.activations >= instance.limit_activations
+            ):
+                instance.active = False
+            await session.commit()
+            return user
 
     @classmethod
     async def create(cls, **kwargs) -> "PromoCode":
