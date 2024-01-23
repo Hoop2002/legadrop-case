@@ -66,6 +66,8 @@ from routers.admin.cases_items import (
 
 from routers.admin.users import create_user
 
+from routers.admin.promocodes import promo_codes
+
 from routers.main.user.profile import (
     user_me,
     update_me_username,
@@ -75,6 +77,7 @@ from routers.main.user.profile import (
     change_password,
 )
 from routers.main.user.items import get_user_items
+from routers.main.shop import shop
 
 from routers.admin.group_category import rarity_group
 
@@ -117,6 +120,8 @@ app.include_router(create_employee, tags=["admin"], prefix="/admin")
 app.include_router(get_employees, tags=["admin"], prefix="/admin")
 app.include_router(get_employee, tags=["admin"], prefix="/admin")
 app.include_router(delete_employee, tags=["admin"], prefix="/admin")
+
+app.include_router(promo_codes, tags=["admin/promo"], prefix="/admin")
 
 app.include_router(assign_permission, tags=["admin/assign"], prefix="/admin")
 app.include_router(get_role_permissions, tags=["admin/assign"], prefix="/admin")
@@ -173,6 +178,8 @@ app.include_router(update_me_locale, tags=["main"])
 app.include_router(update_me_image, tags=["main"])
 app.include_router(change_password, tags=["main"])
 app.include_router(get_user_items, tags=["main"])
+app.include_router(shop, tags=["main"])
+
 
 app.include_router(password_generator, tags=["spec"], prefix="/admin/spec")
 
@@ -199,6 +206,9 @@ from models.admins_models import (
     AdminPanelUserAdmin,
     AdminItemsFindings,
     AdminItemsFindingsStatus,
+    AdminUserItems,
+    AdminCalc,
+    AdminPromoCodes,
 )
 
 from admin_back_auth import AdminAuth
@@ -213,6 +223,7 @@ admin.add_view(AdministratorAdmin)
 admin.add_view(RarityCategoryAdmin)
 admin.add_view(CaseAdmin)
 admin.add_view(ItemAdmin)
+admin.add_view(AdminUserItems)
 admin.add_view(ItemCompoundAdmin)
 admin.add_view(UserAdmin)
 admin.add_view(SocialAuthAdmin)
@@ -222,6 +233,8 @@ admin.add_view(UserTokenAdmin)
 admin.add_view(AdminPanelUserAdmin)
 admin.add_view(AdminItemsFindings)
 admin.add_view(AdminItemsFindingsStatus)
+admin.add_view(AdminCalc)
+admin.add_view(AdminPromoCodes)
 
 
 if __name__ == "__main__":

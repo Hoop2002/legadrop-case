@@ -9,6 +9,7 @@ from .models import (
     Item,
     ItemCompound,
     RarityCategory,
+    UserItems,
 )
 
 from .admin_request_models import (

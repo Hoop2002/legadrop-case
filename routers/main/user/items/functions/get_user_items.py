@@ -2,15 +2,20 @@ from sqlalchemy import select
 from sqlalchemy.orm import joinedload
 from typing import Sequence
 from database import get_session
-from models import Item, User, RarityCategory
+from models import UserItems, Item
 
 
-async def get_items_by_user(user_id: str) -> Sequence[Item]:
+async def get_items_by_user(
+    user_id: str, filter_by: dict = {}, page_size: int = 20, page: int = 0
+) -> Sequence[UserItems]:
     async with get_session() as session:
         stmt = (
-            select(Item)
-            .options(joinedload(Item.rarity_category))
-            .where(Item.user_items.any(User.user_id == user_id))
+            select(UserItems)
+            .options(joinedload(UserItems.item).subqueryload(Item.rarity_category))
+            .where(UserItems.user.has(user_id=user_id))
+            .filter_by(**filter_by)
+            .limit(page_size)
+            .offset(page * page_size)
         )
         result = await session.execute(stmt)
         items = result.scalars().all()

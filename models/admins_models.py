@@ -17,6 +17,9 @@ from .models import (
     AdminPanelUser,
     ItemsFindings,
     ItemsFindingsStatus,
+    UserItems,
+    PromoCode,
+    Calc,
 )
 
 
@@ -81,4 +84,16 @@ class AdminItemsFindings(ModelView, model=ItemsFindings):
 
 
 class AdminItemsFindingsStatus(ModelView, model=ItemsFindingsStatus):
+    column_list = "__all__"
+
+
+class AdminUserItems(ModelView, model=UserItems):
+    column_list = "__all__"
+
+
+class AdminCalc(ModelView, model=Calc):
+    column_list = "__all__"
+
+
+class AdminPromoCodes(ModelView, model=PromoCode):
     column_list = "__all__"

@@ -1,6 +1,10 @@
 from contextlib import asynccontextmanager
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from sqlalchemy.ext.declarative import declarative_base
+
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+
 from dotenv import load_dotenv
 import os
 
@@ -29,3 +33,25 @@ async def get_session():
         raise e
     finally:
         await session.close()
+
+
+DB_SYNC = os.getenv(
+    "DATABASE_URL_PS", "postgresql+psycopg2://postgres@localhost/legadrop"
+)
+engine_sync = create_engine(DB_SYNC)
+
+SessionLocalSync = sessionmaker(autocommit=False, autoflush=False, bind=engine_sync)
+
+
+# todo не работает, разобраться
+# def get_sync_session():
+#     session = SessionLocalSync()
+#     session.begin()
+#     try:
+#         yield session
+#     except Exception as e:
+#         print(e)
+#         session.rollback()
+#         raise e
+#     finally:
+#         session.close()

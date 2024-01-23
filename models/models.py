@@ -1,7 +1,4 @@
-from ast import Str
 from datetime import datetime
-from email.policy import default
-from tokenize import Comment
 from typing import List
 from sqlalchemy import (
     Boolean,
@@ -12,10 +9,12 @@ from sqlalchemy import (
     Integer,
     String,
     Table,
+    select,
 )
-from sqlalchemy.orm import relationship, Mapped, mapped_column
+from sqlalchemy.dialects.postgresql import ENUM as PgEnum
+from sqlalchemy.orm import relationship, Mapped, mapped_column, validates
 
-from database import Base
+from database import Base, get_session
 from utils import generator_id
 
 
@@ -106,14 +105,6 @@ case_openings = Table(
     Column("opened_date", DateTime, default=datetime.utcnow),
 )
 
-user_inventory = Table(
-    "user_inventory",
-    Base.metadata,
-    Column("user_id", String, ForeignKey("users.user_id"), primary_key=True),
-    Column("item_id", String, ForeignKey("items.item_id"), primary_key=True),
-    Column("acquired_date", DateTime, default=datetime.utcnow),
-)
-
 
 class Category(Base):
     __tablename__ = "categories"
@@ -133,6 +124,7 @@ class Case(Base):
     image = Column(String)
     category_id = Column(String, ForeignKey("categories.category_id"))
     created_at = Column(DateTime, default=datetime.utcnow)
+
     category = relationship("Category", back_populates="cases")
     items = relationship("Item", secondary=case_items, back_populates="cases")
     user_opened = relationship(
@@ -167,10 +159,12 @@ class Item(Base):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     item_id = Column(String, unique=True, default=generator_id)
-    name = Column(String)
+    name = Column(String, nullable=False)
     cost = Column(DECIMAL)
-    cost_in_rubles = Column(DECIMAL)
-    gem_cost = Column(Integer)
+    cost_in_rubles = Column(DECIMAL, nullable=False, default=0)
+    sale = Column(Boolean, default=True, nullable=False)  # предмет продаётся
+    # active = Column(Boolean, default=True)  # Предмет можно юзать в кейсе
+    gem_cost = Column(Integer)  # todo скорее всего стоит удалить
     color = Column(String)
     image = Column(String)
     created_at = Column(DateTime, default=datetime.utcnow)
@@ -185,8 +179,8 @@ class Item(Base):
 
     compound = relationship("ItemCompound", back_populates="item")
     cases = relationship("Case", secondary=case_items, back_populates="items")
-    user_items = relationship(
-        "User", secondary=user_inventory, back_populates="inventory_items"
+    user_items: Mapped[List["UserItems"]] = relationship(
+        "UserItems", back_populates="item"
     )
 
 
@@ -212,15 +206,82 @@ class User(Base):
     auth_date = Column(DateTime, default=datetime.utcnow)
     verified = Column(Boolean, default=False)
     active = Column(Boolean, default=True)
+    individual_percent = Column(DECIMAL, default=1.0)
+
     opened_cases = relationship(
         "Case", secondary=case_openings, back_populates="user_opened"
     )
-    inventory_items = relationship(
-        "Item", secondary=user_inventory, back_populates="user_items"
+    user_items: Mapped[List["UserItems"]] = relationship(
+        "UserItems", back_populates="user"
     )
     social_accounts = relationship("SocialAuth", back_populates="user")
     tokens = relationship("UserToken", back_populates="user")
-    individual_percent = Column(DECIMAL, default=1.0)
+    calcs: Mapped[List["Calc"]] = relationship(back_populates="user")
+
+    async def update(self, data: dict):
+        async with get_session() as session:
+            stmt = select(User).filter_by(id=self.id)
+            user = await session.execute(stmt)
+            user = user.scalar()
+            for key in data.keys():
+                if not hasattr(user, key):
+                    raise AttributeError(f"Have no key {key}")
+                else:
+                    setattr(user, key, data[key])
+            await session.commit()
+            session.refresh(user)
+            return user
+
+
+class UserItems(Base):
+    __tablename__ = "user_items"
+
+    id: int = Column(Integer, primary_key=True, autoincrement=True)
+    active: bool = Column(Boolean, default=True, nullable=False)
+
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
+    user: Mapped["User"] = relationship("User", back_populates="user_items")
+    item_id: Mapped[int] = mapped_column(ForeignKey("items.id"))
+    item: Mapped["Item"] = relationship("Item", back_populates="user_items")
+
+    # todo решить надо ли это
+    # @property
+    # def count(self) -> int:
+    #     from database.database import SessionLocalSync
+    #     from sqlalchemy import func
+    #     try:
+    #         session = SessionLocalSync()
+    #         with session:
+    #             stmt = select(func.count(UserItems.id)).filter_by(user_id=self.user_id, item_id=self.item_id)
+    #             result = session.execute(stmt)
+    #             return result.scalar()
+    #     except Exception as err:
+    #         print(err)
+    #     finally:
+    #         session.close()
+
+    async def update(self, data: dict):
+        async with get_session() as session:
+            stmt = select(UserItems).filter_by(id=self.id)
+            instance = await session.execute(stmt)
+            instance = instance.scalar()
+            for key in data.keys():
+                if not hasattr(instance, key):
+                    raise AttributeError(f"Have no key {key}")
+                else:
+                    setattr(instance, key, data[key])
+            await session.commit()
+            session.refresh(instance)
+            return instance
+
+    @classmethod
+    async def create(cls, **kwargs) -> "UserItems":
+        instance = cls(**kwargs)
+        async with get_session() as session:
+            session.add(instance)
+            await session.commit()
+            await session.refresh(instance)
+        return instance
 
 
 class SocialAuth(Base):
@@ -290,6 +351,46 @@ class OrderMoogold(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     itemfs_id = Column(String, ForeignKey("items_findings.itemfs_id"))
     order_id = Column(String)
+
+
+class PromoCode(Base):
+    __tablename__ = "promo_codes"
+
+    id: int = Column(Integer, primary_key=True, autoincrement=True)
+    name: str = Column(String, nullable=False)
+    type_code: str = Column(
+        PgEnum("bonus", "balance", name="promo_types"), nullable=False
+    )
+    activations: int = Column(Integer)
+    to_date: datetime = Column(DateTime)
+    active: bool = Column(Boolean, default=True)
+    creation_date: datetime = Column(DateTime, default=datetime.utcnow())
+
+    calc: Mapped[List["Calc"]] = relationship(back_populates="promo_code")
+
+    async def activate_pomo(self):
+        pass
+
+
+class Calc(Base):
+    __tablename__ = "calcs"
+
+    id: int = Column(Integer, primary_key=True, autoincrement=True)
+    summ: float = Column(DECIMAL, nullable=False)
+    creation_date: datetime = Column(DateTime, default=datetime.utcnow, nullable=False)
+
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
+    user: Mapped["User"] = relationship(back_populates="calcs")
+    promo_code_id: Mapped[int] = mapped_column(ForeignKey("promo_codes.id"))
+    promo_code: Mapped["PromoCode"] = relationship(back_populates="calc")
+
+    # calc_kind todo вид начисления, нужен ли, делать ли?
+    # order todo тут связь с оплатой
+
+    @validates("creation_date")
+    def validate_creation_date(self, key, value):
+        if self.creation_date:
+            raise ValueError("Creation date cannot be modified.")
 
 
 # from sqlalchemy import Table, ForeignKey, Column, Integer, String, Boolean, DateTime, DECIMAL
