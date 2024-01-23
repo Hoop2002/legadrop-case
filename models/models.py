@@ -365,6 +365,7 @@ class PromoCode(Base):
     to_date: datetime = Column(DateTime)
     active: bool = Column(Boolean, default=True)
     creation_date: datetime = Column(DateTime, default=datetime.utcnow())
+    code_data: str = Column(String, unique=True, nullable=False, default=generator_id)
 
     calc: Mapped[List["Calc"]] = relationship(back_populates="promo_code")
 
