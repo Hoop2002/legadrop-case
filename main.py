@@ -66,6 +66,8 @@ from routers.admin.cases_items import (
 
 from routers.admin.users import create_user
 
+from routers.admin.promocodes import promo_codes
+
 from routers.main.user.profile import (
     user_me,
     update_me_username,
@@ -118,6 +120,8 @@ app.include_router(create_employee, tags=["admin"], prefix="/admin")
 app.include_router(get_employees, tags=["admin"], prefix="/admin")
 app.include_router(get_employee, tags=["admin"], prefix="/admin")
 app.include_router(delete_employee, tags=["admin"], prefix="/admin")
+
+app.include_router(promo_codes, tags=["admin/promo"], prefix="/admin")
 
 app.include_router(assign_permission, tags=["admin/assign"], prefix="/admin")
 app.include_router(get_role_permissions, tags=["admin/assign"], prefix="/admin")

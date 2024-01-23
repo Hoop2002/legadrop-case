@@ -357,11 +357,17 @@ class PromoCode(Base):
     __tablename__ = 'promo_codes'
 
     id: int = Column(Integer, primary_key=True, autoincrement=True)
+    name: str = Column(String, nullable=False)
     type_code: str = Column(PgEnum('bonus', 'balance', name='promo_types'), nullable=False)
     activations: int = Column(Integer)
     to_date: datetime = Column(DateTime)
     active: bool = Column(Boolean, default=True)
+    creation_date: datetime = Column(DateTime, default=datetime.utcnow())
+
     calc: Mapped[List['Calc']] = relationship(back_populates='promo_code')
+
+    async def activate_pomo(self):
+        pass
 
 
 class Calc(Base):
