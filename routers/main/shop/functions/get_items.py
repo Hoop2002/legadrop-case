@@ -6,7 +6,7 @@ from models import Item
 
 
 async def get_items(
-    filter_by: dict = None, page_size: int = 20, page: int = 0
+    filter_by: dict = {}, page_size: int = 20, page: int = 0
 ) -> Sequence[Item]:
     async with get_session() as session:
         stmt = (
