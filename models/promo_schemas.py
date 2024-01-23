@@ -11,18 +11,33 @@ class CodeTypeEnum(str, Enum):
 
 class PromoCodeRequestSchema(BaseModel):
     name: str
-    type_code: CodeTypeEnum
-    activations: Optional[str] | None
-    to_date: Optional[datetime] | None
+    summ: float
     active: bool = True
+    code_data: Optional[str] = None
+    type_code: CodeTypeEnum
+    limit_activations: Optional[int] = None
+    to_date: Optional[datetime] = None
 
     class Config:
         from_attributes = True
 
 
 class PromoCodeResponseSchema(PromoCodeRequestSchema):
+    id: int
+    activations: Optional[int] = None
     creation_date: datetime
+    code_data: str
+
+
+class PromoCodeSchema(BaseModel):
+    id: int
+    name: str
+    active: bool = True
+    code_data: str
+
+    class Config:
+        from_attributes = True
 
 
 class ListPromoCodesSchema(RootModel):
-    root: List[PromoCodeResponseSchema]
+    root: List[PromoCodeSchema]

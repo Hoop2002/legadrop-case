@@ -10,6 +10,8 @@ from .models import (
     ItemCompound,
     RarityCategory,
     UserItems,
+    PromoCode,
+    Calc,
 )
 
 from .admin_request_models import (

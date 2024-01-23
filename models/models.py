@@ -361,15 +361,28 @@ class PromoCode(Base):
     type_code: str = Column(
         PgEnum("bonus", "balance", name="promo_types"), nullable=False
     )
-    activations: int = Column(Integer)
+    summ: float = Column(DECIMAL, nullable=False, default=1)
+    limit_activations: int = Column(Integer)
     to_date: datetime = Column(DateTime)
+
+    activations: int = Column(Integer)
     active: bool = Column(Boolean, default=True)
     creation_date: datetime = Column(DateTime, default=datetime.utcnow())
+    code_data: str = Column(String, unique=True, nullable=False, default=generator_id)
 
     calc: Mapped[List["Calc"]] = relationship(back_populates="promo_code")
 
     async def activate_pomo(self):
         pass
+
+    @classmethod
+    async def create(cls, **kwargs) -> "PromoCode":
+        instance = cls(**kwargs)
+        async with get_session() as session:
+            session.add(instance)
+            await session.commit()
+            await session.refresh(instance)
+        return instance
 
 
 class Calc(Base):
