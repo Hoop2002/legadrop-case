@@ -5,8 +5,8 @@ from typing import List, Optional
 
 
 class CodeTypeEnum(str, Enum):
-    bonus = 'bonus'
-    balance = 'balance'
+    bonus = "bonus"
+    balance = "balance"
 
 
 class PromoCodeRequestSchema(BaseModel):

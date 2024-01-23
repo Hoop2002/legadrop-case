@@ -19,7 +19,7 @@ from .models import (
     ItemsFindingsStatus,
     UserItems,
     PromoCode,
-    Calc
+    Calc,
 )
 
 
@@ -88,12 +88,12 @@ class AdminItemsFindingsStatus(ModelView, model=ItemsFindingsStatus):
 
 
 class AdminUserItems(ModelView, model=UserItems):
-    column_list = '__all__'
+    column_list = "__all__"
 
 
 class AdminCalc(ModelView, model=Calc):
-    column_list = '__all__'
+    column_list = "__all__"
 
 
 class AdminPromoCodes(ModelView, model=PromoCode):
-    column_list = '__all__'
+    column_list = "__all__"
