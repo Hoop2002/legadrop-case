@@ -361,6 +361,7 @@ class PromoCode(Base):
     type_code: str = Column(
         PgEnum("bonus", "balance", name="promo_types"), nullable=False
     )
+    summ: float = Column(DECIMAL, nullable=False, default=1)
     activations: int = Column(Integer)
     to_date: datetime = Column(DateTime)
     active: bool = Column(Boolean, default=True)
