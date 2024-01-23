@@ -11,7 +11,8 @@ from sqlalchemy import (
     Table,
     select,
 )
-from sqlalchemy.orm import relationship, Mapped, mapped_column
+from sqlalchemy.dialects.postgresql import ENUM as PgEnum
+from sqlalchemy.orm import relationship, Mapped, mapped_column, validates
 
 from database import Base, get_session
 from utils import generator_id
@@ -205,6 +206,8 @@ class User(Base):
     auth_date = Column(DateTime, default=datetime.utcnow)
     verified = Column(Boolean, default=False)
     active = Column(Boolean, default=True)
+    individual_percent = Column(DECIMAL, default=1.0)
+
     opened_cases = relationship(
         "Case", secondary=case_openings, back_populates="user_opened"
     )
@@ -213,7 +216,7 @@ class User(Base):
     )
     social_accounts = relationship("SocialAuth", back_populates="user")
     tokens = relationship("UserToken", back_populates="user")
-    individual_percent = Column(DECIMAL, default=1.0)
+    calcs: Mapped[List["Calc"]] = relationship(back_populates='user')
 
     async def update(self, data: dict):
         async with get_session() as session:
@@ -348,6 +351,38 @@ class OrderMoogold(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     itemfs_id = Column(String, ForeignKey("items_findings.itemfs_id"))
     order_id = Column(String)
+
+
+class PromoCode(Base):
+    __tablename__ = 'promo_codes'
+
+    id: int = Column(Integer, primary_key=True, autoincrement=True)
+    type_code: str = Column(PgEnum('bonus', 'balance', name='promo_types'), nullable=False)
+    activations: int = Column(Integer)
+    to_date: datetime = Column(DateTime)
+    active: bool = Column(Boolean, default=True)
+    calc: Mapped[List['Calc']] = relationship(back_populates='promo_code')
+
+
+class Calc(Base):
+    __tablename__ = 'calcs'
+
+    id: int = Column(Integer, primary_key=True, autoincrement=True)
+    summ: float = Column(DECIMAL, nullable=False)
+    creation_date: datetime = Column(DateTime, default=datetime.utcnow, nullable=False)
+
+    user_id: Mapped[int] = mapped_column(ForeignKey('users.id'))
+    user: Mapped["User"] = relationship(back_populates='calcs')
+    promo_code_id: Mapped[int] = mapped_column(ForeignKey('promo_codes.id'))
+    promo_code: Mapped["PromoCode"] = relationship(back_populates='calc')
+
+    # calc_kind todo вид начисления, нужен ли, делать ли?
+    # order todo тут связь с оплатой
+
+    @validates('creation_date')
+    def validate_creation_date(self, key, value):
+        if self.creation_date:
+            raise ValueError('Creation date cannot be modified.')
 
 
 # from sqlalchemy import Table, ForeignKey, Column, Integer, String, Boolean, DateTime, DECIMAL

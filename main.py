@@ -202,6 +202,9 @@ from models.admins_models import (
     AdminPanelUserAdmin,
     AdminItemsFindings,
     AdminItemsFindingsStatus,
+    AdminUserItems,
+    AdminCalc,
+    AdminPromoCodes,
 )
 
 from admin_back_auth import AdminAuth
@@ -216,6 +219,7 @@ admin.add_view(AdministratorAdmin)
 admin.add_view(RarityCategoryAdmin)
 admin.add_view(CaseAdmin)
 admin.add_view(ItemAdmin)
+admin.add_view(AdminUserItems)
 admin.add_view(ItemCompoundAdmin)
 admin.add_view(UserAdmin)
 admin.add_view(SocialAuthAdmin)
@@ -225,6 +229,8 @@ admin.add_view(UserTokenAdmin)
 admin.add_view(AdminPanelUserAdmin)
 admin.add_view(AdminItemsFindings)
 admin.add_view(AdminItemsFindingsStatus)
+admin.add_view(AdminCalc)
+admin.add_view(AdminPromoCodes)
 
 
 if __name__ == "__main__":
