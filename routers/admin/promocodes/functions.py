@@ -1,8 +1,20 @@
 from sqlalchemy import select
-from sqlalchemy.orm import joinedload
-from typing import Sequence, Optional
+from typing import Sequence
 from database import get_session
-from models import PromoCode
+from models import PromoCode, User
+
+
+async def used_promo(code_data, user_id):
+    async with get_session() as session:
+        stmt = (
+            select(PromoCode.id)
+            .filter_by(code_data=code_data, active=True).filter(PromoCode.users.any(User.user_id == user_id))
+        )
+        result = await session.execute(stmt)
+        result = result.scalar()
+        if result:
+            return True
+        return False
 
 
 async def get_promo(

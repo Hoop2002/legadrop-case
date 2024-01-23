@@ -9,6 +9,10 @@ class CodeTypeEnum(str, Enum):
     balance = "balance"
 
 
+class UserRequestPromoCodeSchema(BaseModel):
+    code_data: str
+
+
 class PromoCodeRequestSchema(BaseModel):
     name: str
     summ: float
