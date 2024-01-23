@@ -1,5 +1,5 @@
 # Импорт сторонних библиотек
-from fastapi import Depends, HTTPException, status
+from fastapi import Depends, HTTPException, status, Request
 from fastapi.security import OAuth2PasswordBearer
 from jose import jwt, ExpiredSignatureError, JWTError
 

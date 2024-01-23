@@ -7,7 +7,7 @@ router = APIRouter()
 
 
 @router.get("/items")
-async def get_items_(admin: str = Depends(verify_admin)):
+async def get_items_(admin: str = Depends(verify_admin), offset: int = 0, limit: int = 20):
     items = await get_items()
 
     return items
