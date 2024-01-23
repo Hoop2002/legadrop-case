@@ -6,7 +6,7 @@ from models import Item
 from models.models import ItemCompound
 
 
-async def get_items() -> Sequence[Item]:
+async def get_items():
     async with get_session() as session:
         result = await session.execute(select(Item).options(joinedload(Item.compound)))
         items = result.scalars().unique().all()
