@@ -15,7 +15,7 @@ from sqlalchemy.dialects.postgresql import ENUM as PgEnum
 from sqlalchemy.orm import relationship, Mapped, mapped_column, validates, joinedload
 
 from database import Base, get_session
-from utils import generator_id
+from utils import generator_id, default_case_name
 
 
 role_permissions = Table(
@@ -118,12 +118,13 @@ class Category(Base):
 class Case(Base):
     __tablename__ = "cases"
 
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    case_id = Column(String, unique=True, default=generator_id)
-    name = Column(String)
+    id: int = Column(Integer, primary_key=True, autoincrement=True)
+    case_id: str = Column(String, unique=True, default=generator_id)
+    name: str = Column(String)
+    translit_name: str = Column(String, default=default_case_name, onupdate=default_case_name, nullable=False)
     image = Column(String)
-    category_id = Column(String, ForeignKey("categories.category_id"))
-    created_at = Column(DateTime, default=datetime.utcnow)
+    category_id: str = Column(String, ForeignKey("categories.category_id"))
+    created_at: datetime = Column(DateTime, default=datetime.utcnow)
 
     category = relationship("Category", back_populates="cases")
     items = relationship("Item", secondary=case_items, back_populates="cases")
