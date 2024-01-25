@@ -7,7 +7,7 @@ from models import PromoCode, User
 async def used_promo(code_data, user_id):
     async with get_session() as session:
         stmt = (
-            select(PromoCode.id)
+            select(PromoCode.promo_id)
             .filter_by(code_data=code_data, active=True)
             .filter(PromoCode.users.any(User.user_id == user_id))
         )

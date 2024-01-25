@@ -22,8 +22,8 @@ async def get_promo_codes(
 
 
 @router.get("/promo/{promo_id}", response_model=PromoCodeResponseSchema)
-async def get_promo_code(promo_id: int, admin: RequestAdminID = Depends(verify_admin)):
-    promo_code = await get_promo(filter_by=dict(id=promo_id))
+async def get_promo_code(promo_id: str, admin: RequestAdminID = Depends(verify_admin)):
+    promo_code = await get_promo(filter_by=dict(promo_id=promo_id))
     promo_code = promo_code[0]
     if not promo_code:
         return JSONResponse(
