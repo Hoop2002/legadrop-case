@@ -8,7 +8,6 @@ import json
 import requests
 
 
-
 class ApiMoogold:
     def __init__(self, secret_key: str, parner_id: str, category: str):
         self.SECRET_KEY = secret_key
@@ -57,7 +56,7 @@ class ApiMoogold:
         )
 
         return json.loads(response.content.decode("utf-8"))
-    
+
     def get_moogold_order_detail(self, order_id):
         order = {"path": "order/order_detail", "order_id": order_id}
         order_json = json.dumps(order)
@@ -124,4 +123,4 @@ class ApiMoogold:
             headers=headers,
         )
 
-        return json.loads(response.content.decode("utf-8"))    
+        return json.loads(response.content.decode("utf-8"))
