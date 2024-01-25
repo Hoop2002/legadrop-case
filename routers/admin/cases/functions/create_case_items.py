@@ -44,6 +44,6 @@ async def _create_case_items(case: dict):
         session.add(case)
         await session.commit()
         await session.flush(case)
-        await session.refresh(case, attribute_names=('category', 'items'))
+        await session.refresh(case, attribute_names=("category", "items"))
 
     return case
