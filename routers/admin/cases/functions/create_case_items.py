@@ -22,10 +22,7 @@ async def _create_case_items(case: dict):
         name = case.get("name")
         created = await get_case_by_name(name)
         if created:
-            return HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail=f"Кейс с таким именем уже существует",
-            )
+            raise ValueError("Кейс с таким именем уже существует")
 
         try:
             category = await session.execute(
@@ -33,10 +30,7 @@ async def _create_case_items(case: dict):
             )
             category = category.scalars().one()
         except NoResultFound:
-            return HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail=f"Категория {category_id} не найденa!",
-            )
+            raise ValueError(f"Категория {category_id} не найденa!")
 
         async with aiofiles.open(file_path, "wb") as f:
             await f.write(base64.b64decode(case["image"]))
