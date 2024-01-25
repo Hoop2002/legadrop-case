@@ -129,6 +129,7 @@ class Case(Base):
         unique=True,
     )
     image = Column(String)
+    price: float = Column(DECIMAL, nullable=False, default=0)
     category_id: str = Column(String, ForeignKey("categories.category_id"))
     created_at: datetime = Column(DateTime, default=datetime.utcnow)
 
