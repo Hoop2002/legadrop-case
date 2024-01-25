@@ -1,7 +1,9 @@
 def default_case_name(context):
-    name = context.get_current_parameters()["name"]
-    translit = transliterate(name)
-    return translit
+    if hasattr(context, "get_current_parameters"):
+        name = context.get_current_parameters()["name"]
+        translit = transliterate(name)
+        return translit
+    return None
 
 
 def transliterate(name, lang="ru"):
@@ -211,8 +213,8 @@ def transliterate(name, lang="ru"):
         },
     }
     if lang not in associations:
-        raise ValueError('Unknown language')
+        raise ValueError("Unknown language")
     # Циклически заменяем все буквы в строке
     for key in associations[lang]:
-        name = name.replace(key, associations[key])
+        name = name.replace(key, associations[lang][key])
     return name

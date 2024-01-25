@@ -120,8 +120,14 @@ class Case(Base):
 
     id: int = Column(Integer, primary_key=True, autoincrement=True)
     case_id: str = Column(String, unique=True, default=generator_id)
-    name: str = Column(String)
-    translit_name: str = Column(String, default=default_case_name, onupdate=default_case_name, nullable=False)
+    name: str = Column(String, unique=True, nullable=False)
+    translit_name: str = Column(
+        String,
+        default=default_case_name,
+        onupdate=default_case_name,
+        nullable=False,
+        unique=True,
+    )
     image = Column(String)
     category_id: str = Column(String, ForeignKey("categories.category_id"))
     created_at: datetime = Column(DateTime, default=datetime.utcnow)
