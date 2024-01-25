@@ -23,16 +23,9 @@ class RequestDeleteMe(BaseModel):
     password: str
 
 
+# todo к удалению
 class ListItems(BaseModel):
     item_id: str
-
-
-class CreateCases(BaseModel):
-    name: str
-    category: str
-    image_name: str
-    image: str  # base64
-    items: List[ListItems]
 
 
 class AddItemsInOneCase(BaseModel):

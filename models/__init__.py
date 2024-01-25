@@ -105,5 +105,5 @@ from .assgn_role_models import AssignRoleData
 from .user_models import UserData, UserCreate, UserID
 from .spec_models import Password, PasswordGenerator
 from .token_models import TokenData
-from .open_case_model import ItemList
+from .case_schemas import ItemList
 from .request_models import *

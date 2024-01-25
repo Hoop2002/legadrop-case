@@ -1,4 +1,5 @@
-from pydantic import RootModel, BaseModel
+from datetime import datetime
+from pydantic import RootModel, BaseModel, Field
 from typing import List
 
 
@@ -7,6 +8,14 @@ class RarityCategorySchema(BaseModel):
 
     class Config:
         from_attributes = True
+
+
+class AdminRarityCategorySchema(RarityCategorySchema):
+    id: int
+    name: str
+    category_id: str
+    category_percent: float = Field(le=1)
+    ext_id: str
 
 
 class ItemRequestSchema(BaseModel):
@@ -40,3 +49,11 @@ class UserItemsSchema(BaseModel):
 
 class UserItemsListSchema(RootModel):
     root: List[UserItemsSchema]
+
+
+class AdminItemSchema(ItemSchema):
+    item_id: str
+    sale: bool
+    created_at: datetime
+    step_down_factor: float
+    rarity_category: AdminRarityCategorySchema
