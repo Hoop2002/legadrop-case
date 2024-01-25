@@ -1,6 +1,6 @@
 from datetime import datetime
 from typing import Optional, List
-from pydantic import BaseModel, RootModel, Base64Str, Base64Bytes
+from pydantic import BaseModel, RootModel
 from models.item_schemas import AdminItemSchema, ItemRequestSchema
 
 
@@ -27,8 +27,15 @@ class AdminCreateCaseSchema(BaseModel):
     items: List[ItemRequestSchema]
 
 
-class AdminCaseSchema(AdminCreateCaseSchema):
+class AdminCaseSchema(BaseModel):
     case_id: str
+    name: str
+    image: str
+    case_id: str
+    price: float
     created_at: datetime
-    category: AdminItemSchema
-    items: AdminItemSchema
+    category: Optional[AdminCategorySchema]
+    # items: Optional[List[AdminItemSchema]]
+
+    class Config:
+        from_attributes = True

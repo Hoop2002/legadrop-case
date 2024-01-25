@@ -6,7 +6,7 @@ from .functions import _create_case_items
 router = APIRouter()
 
 
-@router.post("/case/create")
+@router.post("/case/create", response_model=AdminCaseSchema)
 async def create_case_list(case: AdminCreateCaseSchema, admin=Depends(verify_admin)):
     case_ = await _create_case_items(case=case.model_dump())
     return case_
