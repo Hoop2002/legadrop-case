@@ -18,8 +18,8 @@ async def create_outputs(data: OutputAllItemF, admin: str = Depends(verify_admin
     return outputs
 
 
-@router.get("/api/v1/output")
-@router.get("/api/v1/output/page_size={page_size}&page={page}")
+
+@router.get("/api/v1/output/")
 async def gets_outputs(
     page_size: int = None, page: int = None, admin: str = Depends(verify_admin)
 ):
