@@ -24,7 +24,7 @@ async def get_user_items(
 async def sale_user_item(user_item_id: ItemRequestSchema, user_id=Depends(verify_user)):
     user = await get_user(user_id)
     item = await get_items_by_user(
-        user_id, filter_by=dict(id=user_item_id.id, active=True)
+        user_id, filter_by=dict(item_id=user_item_id.item_id, active=True)
     )
     item = item[0]
     if not item:

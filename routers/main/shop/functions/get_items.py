@@ -21,9 +21,9 @@ async def get_items(
         return items
 
 
-async def get_item_by_id(item_id: int) -> Optional[Item]:
+async def get_item_by_id(item_id: str) -> Optional[Item]:
     async with get_session() as session:
-        stmt = select(Item).filter_by(id=item_id)
+        stmt = select(Item).filter_by(item_id=item_id)
         result = await session.execute(stmt)
         items = result.scalars().first()
         return items

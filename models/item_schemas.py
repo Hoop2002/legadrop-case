@@ -19,7 +19,7 @@ class AdminRarityCategorySchema(RarityCategorySchema):
 
 
 class ItemRequestSchema(BaseModel):
-    id: int
+    item_id: str
 
 
 class ItemSchema(ItemRequestSchema):

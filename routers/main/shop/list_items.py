@@ -20,7 +20,7 @@ async def get_user_items(page: int = 0, page_size: int = 20):
 @router.post("/shop/buy_item")
 async def buy_item(item: ItemRequestSchema, user_id=Depends(verify_user)):
     user = await get_user(user_id)
-    _item = await get_item_by_id(item.id)
+    _item = await get_item_by_id(item.item_id)
     if not _item:
         return JSONResponse(
             content={"message": "Все предметы уже проданы"},

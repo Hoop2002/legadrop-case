@@ -377,6 +377,7 @@ class PromoCode(Base):
     __tablename__ = "promo_codes"
 
     id: int = Column(Integer, primary_key=True, autoincrement=True)
+    promo_id: str = Column(String, unique=True, default=generator_id)
     name: str = Column(String, nullable=False)
     type_code: str = Column(
         PgEnum("bonus", "balance", name="promo_types"), nullable=False
@@ -436,6 +437,7 @@ class Calc(Base):
     __tablename__ = "calcs"
 
     id: int = Column(Integer, primary_key=True, autoincrement=True)
+    calc_id: str = Column(String, unique=True, default=generator_id)
     summ: float = Column(DECIMAL, nullable=False)
     creation_date: datetime = Column(DateTime, default=datetime.utcnow, nullable=False)
 
