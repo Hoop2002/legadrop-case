@@ -9,6 +9,7 @@ from sqlalchemy import (
     Integer,
     String,
     Table,
+    Time,
     select,
 )
 from sqlalchemy.dialects.postgresql import ENUM as PgEnum
@@ -106,6 +107,32 @@ case_openings = Table(
 )
 
 
+case_conditions = Table(
+    "case_conditions",
+    Base.metadata,
+    Column("condition_id", String, ForeignKey("conditions.condition_id")),
+    Column("case_id", String, ForeignKey("cases.case_id")),
+)
+
+
+class Conditions(Base):
+    __tablename__ = "conditions"
+
+    id: int = Column(Integer, primary_key=True, autoincrement=True)
+    condition_id: str = Column(String, unique=True, default=generator_id)
+    price: float = Column(
+        DECIMAL, default=0, nullable=False
+    )  # сумма, которую нужно внести
+    time: datetime.time = Column(Time)  # Время в течении которого нужно внести сумму
+    timer_reboot: datetime.time = Column(
+        Time
+    )  # время через которое опять можно открыть кейс
+
+    cases: Mapped["Case"] = relationship(
+        "Case", secondary=case_conditions, back_populates="conditions"
+    )
+
+
 class Category(Base):
     __tablename__ = "categories"
 
@@ -130,6 +157,9 @@ class Case(Base):
     )
     image = Column(String)
     price: float = Column(DECIMAL, nullable=False, default=0)
+    case_free: bool = Column(
+        Boolean, default=False, nullable=False, server_default=str(False)
+    )
     category_id: str = Column(String, ForeignKey("categories.category_id"))
     created_at: datetime = Column(DateTime, default=datetime.utcnow)
 
@@ -137,6 +167,9 @@ class Case(Base):
     items = relationship("Item", secondary=case_items, back_populates="cases")
     user_opened = relationship(
         "User", secondary=case_openings, back_populates="opened_cases"
+    )
+    conditions: Mapped["Conditions"] = relationship(
+        "Conditions", secondary=case_conditions, back_populates="cases"
     )
 
 
