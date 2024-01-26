@@ -9,6 +9,7 @@ from sqlalchemy import (
     Integer,
     String,
     Table,
+    Time,
     select,
 )
 from sqlalchemy.dialects.postgresql import ENUM as PgEnum
@@ -96,14 +97,37 @@ case_items = Table(
     Column("item_id", String, ForeignKey("items.item_id"), primary_key=True),
 )
 
-case_openings = Table(
-    "case_openings",
+
+case_conditions = Table(
+    "case_conditions",
     Base.metadata,
-    Column("id", Integer, primary_key=True, autoincrement=True),
-    Column("user_id", String, ForeignKey("users.user_id")),
+    Column("condition_id", String, ForeignKey("conditions.condition_id")),
     Column("case_id", String, ForeignKey("cases.case_id")),
-    Column("opened_date", DateTime, default=datetime.utcnow),
 )
+
+
+class Conditions(Base):
+    __tablename__ = "conditions"
+
+    id: int = Column(Integer, primary_key=True, autoincrement=True)
+    condition_id: str = Column(String, unique=True, default=generator_id)
+    type_condition: str = Column(
+        PgEnum("calcs", "time", name="condition_types"),
+        nullable=False,
+        default="calcs",
+        server_default="calcs",
+    )
+    price: float = Column(
+        DECIMAL, default=0, nullable=False
+    )  # сумма, которую нужно внести
+    time: datetime.time = Column(Time)  # Время в течении которого нужно внести сумму
+    timer_reboot: datetime.time = Column(
+        Time
+    )  # время через которое опять можно открыть кейс
+
+    cases: Mapped["Case"] = relationship(
+        "Case", secondary=case_conditions, back_populates="conditions"
+    )
 
 
 class Category(Base):
@@ -130,14 +154,34 @@ class Case(Base):
     )
     image = Column(String)
     price: float = Column(DECIMAL, nullable=False, default=0)
+    case_free: bool = Column(
+        Boolean, default=False, nullable=False, server_default=str(False)
+    )
     category_id: str = Column(String, ForeignKey("categories.category_id"))
     created_at: datetime = Column(DateTime, default=datetime.utcnow)
 
     category = relationship("Category", back_populates="cases")
     items = relationship("Item", secondary=case_items, back_populates="cases")
-    user_opened = relationship(
-        "User", secondary=case_openings, back_populates="opened_cases"
+
+    conditions: Mapped["Conditions"] = relationship(
+        "Conditions", secondary=case_conditions, back_populates="cases"
     )
+    users_open: Mapped[List["Case"]] = relationship(
+        "OpenedCases", back_populates="case"
+    )
+
+
+class OpenedCases(Base):
+    __tablename__ = "opened_cases"
+
+    id: int = Column(Integer, primary_key=True, autoincrement=True)
+    history_id: str = Column(String, nullable=False, unique=True, default=generator_id)
+    opening_date: datetime = Column(DateTime, nullable=False, default=datetime.utcnow)
+
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
+    user: Mapped["User"] = relationship("User", back_populates="opened_cases")
+    case_id: Mapped[int] = mapped_column(ForeignKey("cases.id"))
+    case: Mapped["Case"] = relationship("Case", back_populates="users_open")
 
 
 class ItemCompound(Base):
@@ -225,9 +269,7 @@ class User(Base):
     active = Column(Boolean, default=True)
     individual_percent = Column(DECIMAL, default=1.0)
 
-    opened_cases = relationship(
-        "Case", secondary=case_openings, back_populates="user_opened"
-    )
+    opened_cases = relationship("OpenedCases", back_populates="user")
     user_items: Mapped[List["UserItems"]] = relationship(
         "UserItems", back_populates="user"
     )

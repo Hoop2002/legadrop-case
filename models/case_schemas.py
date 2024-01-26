@@ -24,6 +24,7 @@ class AdminCreateCaseSchema(BaseModel):
     image_name: str
     image: str  # base64
     price: float
+    case_free: Optional[bool]
     items: List[ItemRequestSchema]
 
 
@@ -33,9 +34,14 @@ class AdminCaseSchema(BaseModel):
     image: str
     case_id: str
     price: float
+    case_free: bool
     created_at: datetime
     category: Optional[AdminCategorySchema]
     # items: Optional[List[AdminItemSchema]]
 
     class Config:
         from_attributes = True
+
+
+class AdminListCasesSchema(RootModel):
+    root: List[AdminCaseSchema]
