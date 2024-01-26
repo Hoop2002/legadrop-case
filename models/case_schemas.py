@@ -41,3 +41,7 @@ class AdminCaseSchema(BaseModel):
 
     class Config:
         from_attributes = True
+
+
+class AdminListCasesSchema(RootModel):
+    root: List[AdminCaseSchema]

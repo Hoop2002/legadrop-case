@@ -41,8 +41,7 @@ from routers.admin.categories import (
 )
 
 from routers.admin.cases import (
-    create_case,
-    get_cases,
+    cases,
     get_case,
     delete_case,
     update_case,
@@ -145,8 +144,7 @@ app.include_router(get_category_id, tags=["admin/categories"], prefix="/admin")
 app.include_router(update_category, tags=["admin/categories"], prefix="/admin")
 app.include_router(delete_category, tags=["admin/categories"], prefix="/admin")
 
-app.include_router(create_case, tags=["admin/cases"], prefix="/admin")
-app.include_router(get_cases, tags=["admin/cases"], prefix="/admin")
+app.include_router(cases, tags=["admin/cases"], prefix="/admin")
 app.include_router(get_case, tags=["admin/cases"], prefix="/admin")
 app.include_router(update_case, tags=["admin/cases"], prefix="/admin")
 app.include_router(delete_case, tags=["admin/cases"], prefix="/admin")
