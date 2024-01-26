@@ -97,15 +97,6 @@ case_items = Table(
     Column("item_id", String, ForeignKey("items.item_id"), primary_key=True),
 )
 
-case_openings = Table(
-    "case_openings",
-    Base.metadata,
-    Column("id", Integer, primary_key=True, autoincrement=True),
-    Column("user_id", String, ForeignKey("users.user_id")),
-    Column("case_id", String, ForeignKey("cases.case_id")),
-    Column("opened_date", DateTime, default=datetime.utcnow),
-)
-
 
 case_conditions = Table(
     "case_conditions",
@@ -171,12 +162,26 @@ class Case(Base):
 
     category = relationship("Category", back_populates="cases")
     items = relationship("Item", secondary=case_items, back_populates="cases")
-    user_opened = relationship(
-        "User", secondary=case_openings, back_populates="opened_cases"
-    )
+
     conditions: Mapped["Conditions"] = relationship(
         "Conditions", secondary=case_conditions, back_populates="cases"
     )
+    users_open: Mapped[List["Case"]] = relationship(
+        "OpenedCases", back_populates="case"
+    )
+
+
+class OpenedCases(Base):
+    __tablename__ = "opened_cases"
+
+    id: int = Column(Integer, primary_key=True, autoincrement=True)
+    history_id: str = Column(String, nullable=False, unique=True, default=generator_id)
+    opening_date: datetime = Column(DateTime, nullable=False, default=datetime.utcnow)
+
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
+    user: Mapped["User"] = relationship("User", back_populates="opened_cases")
+    case_id: Mapped[int] = mapped_column(ForeignKey("cases.id"))
+    case: Mapped["Case"] = relationship("Case", back_populates="users_open")
 
 
 class ItemCompound(Base):
@@ -264,9 +269,7 @@ class User(Base):
     active = Column(Boolean, default=True)
     individual_percent = Column(DECIMAL, default=1.0)
 
-    opened_cases = relationship(
-        "Case", secondary=case_openings, back_populates="user_opened"
-    )
+    opened_cases = relationship("OpenedCases", back_populates="user")
     user_items: Mapped[List["UserItems"]] = relationship(
         "UserItems", back_populates="user"
     )
