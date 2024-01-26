@@ -120,6 +120,12 @@ class Conditions(Base):
 
     id: int = Column(Integer, primary_key=True, autoincrement=True)
     condition_id: str = Column(String, unique=True, default=generator_id)
+    type_condition: str = Column(
+        PgEnum("calcs", "time", name="condition_types"),
+        nullable=False,
+        default="calcs",
+        server_default="calcs",
+    )
     price: float = Column(
         DECIMAL, default=0, nullable=False
     )  # сумма, которую нужно внести
