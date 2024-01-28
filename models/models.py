@@ -152,6 +152,9 @@ class Case(Base):
         nullable=False,
         unique=True,
     )
+    active: bool = Column(
+        Boolean, nullable=False, default=True, server_default=str(True)
+    )
     image = Column(String)
     price: float = Column(DECIMAL, nullable=False, default=0)
     case_free: bool = Column(

@@ -24,6 +24,7 @@ class AdminCreateCaseSchema(BaseModel):
     image_name: str
     image: str  # base64
     price: float
+    active: bool
     case_free: Optional[bool]
     items: List[ItemRequestSchema]
 
@@ -31,6 +32,7 @@ class AdminCreateCaseSchema(BaseModel):
 class AdminCaseSchema(BaseModel):
     case_id: str
     name: str
+    active: bool
     image: str
     case_id: str
     price: float
